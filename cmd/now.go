@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -34,9 +35,13 @@ var nowCmd = &cobra.Command{
 			now = now.In(location)
 		}
 
-		switch Format {
+		switch strings.ToLower(Format) {
 		case "unix", "timestamp", "ts":
 			fmt.Println(now.Unix())
+		case "rfc", "rfc3339":
+			fmt.Println(now.Format(time.RFC3339))
+		case "iso", "iso8601":
+			fmt.Println(now.Format("2006-01-02T15:04:05.999Z07:00"))
 		case "go", "":
 			fmt.Println(now)
 		default:
