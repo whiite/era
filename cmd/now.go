@@ -46,15 +46,22 @@ var nowCmd = &cobra.Command{
 		case "go", "":
 			fmt.Println(now)
 		default:
-			fmt.Println(parseFormatLinux(now, &Format))
+			fmt.Println(parseFormatLinux(now, &Format, &dateFormatter))
 		}
 
 		return nil
 	},
 }
 
-func parseFormatLinux(date time.Time, formatString *string) string {
-	tokenMap := map[rune]func(dt time.Time) string{
+type DateFormatterPrefix struct {
+	prefix   rune
+	tokenMap map[rune]func(dt time.Time) string
+}
+
+// Formats date strings using the unix `date` CLI tokens and prefix
+var dateFormatter = DateFormatterPrefix{
+	prefix: '%',
+	tokenMap: map[rune]func(dt time.Time) string{
 		'Y': func(dt time.Time) string { return strconv.Itoa(dt.Year()) },
 		'm': func(dt time.Time) string { return strconv.Itoa(int(dt.Month())) },
 		'B': func(dt time.Time) string { return dt.Month().String() },
@@ -77,27 +84,27 @@ func parseFormatLinux(date time.Time, formatString *string) string {
 			_, weekNumber := dt.ISOWeek()
 			return strconv.Itoa(weekNumber)
 		},
-	}
+	},
+}
 
+func parseFormatLinux(date time.Time, formatString *string, formatter *DateFormatterPrefix) string {
 	var formattedDate strings.Builder
 	interpretToken := false
-	substitutePrefix := '%'
 
 	for _, char := range *formatString {
-		if char == substitutePrefix && interpretToken == false {
+		if char == formatter.prefix {
+			if interpretToken {
+				formattedDate.WriteRune(formatter.prefix)
+			}
 			interpretToken = true
 			continue
 		}
 
-		formatFunc := tokenMap[char]
+		formatFunc := formatter.tokenMap[char]
 		if interpretToken && formatFunc != nil {
 			formattedDate.WriteString(formatFunc(date))
 			interpretToken = false
 			continue
-		}
-
-		if interpretToken {
-			formattedDate.WriteRune(substitutePrefix)
 		}
 
 		formattedDate.WriteRune(char)
