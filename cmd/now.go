@@ -46,7 +46,7 @@ var nowCmd = &cobra.Command{
 		case "go", "":
 			fmt.Println(now)
 		default:
-			fmt.Println(parseFormatLinux(now, &Format, &dateFormatter))
+			fmt.Println(parseFormatWithPrefixToken(now, &Format, &dateFormatter))
 		}
 
 		return nil
@@ -58,19 +58,23 @@ type DateFormatterPrefix struct {
 	tokenMap map[rune]func(dt time.Time) string
 }
 
-// Formats date strings using the unix `date` CLI tokens and prefix
+// Formats date strings via the same system as `strptime`
 var dateFormatter = DateFormatterPrefix{
 	prefix: '%',
 	tokenMap: map[rune]func(dt time.Time) string{
-		'Y': func(dt time.Time) string { return strconv.Itoa(dt.Year()) },
-		'm': func(dt time.Time) string { return strconv.Itoa(int(dt.Month())) },
+		'%': func(dt time.Time) string { return "%" },
+		'A': func(dt time.Time) string { return dt.Weekday().String() },
+		'a': func(dt time.Time) string { return dt.Weekday().String()[:3] },
 		'B': func(dt time.Time) string { return dt.Month().String() },
 		'b': func(dt time.Time) string { return dt.Month().String()[:3] },
+		'h': func(dt time.Time) string { return dt.Month().String()[:3] },
+		'c': func(dt time.Time) string { return dt.Format("Mon _2 Jan 15:04:05 2006") },
+		'C': func(dt time.Time) string { return strconv.Itoa(dt.Year() / 100) },
+		'Y': func(dt time.Time) string { return strconv.Itoa(dt.Year()) },
+		'm': func(dt time.Time) string { return strconv.Itoa(int(dt.Month())) },
 		'd': func(dt time.Time) string { return strconv.Itoa(dt.Day()) },
 		'j': func(dt time.Time) string { return strconv.Itoa(dt.YearDay()) },
 		'u': func(dt time.Time) string { return strconv.Itoa(int(dt.Weekday())) },
-		'A': func(dt time.Time) string { return dt.Weekday().String() },
-		'a': func(dt time.Time) string { return dt.Weekday().String()[:3] },
 		'H': func(dt time.Time) string { return strconv.Itoa(dt.Hour()) },
 		'I': func(dt time.Time) string { return strconv.Itoa(dt.Hour() % 12) },
 		'M': func(dt time.Time) string { return strconv.Itoa(dt.Minute()) },
@@ -87,7 +91,7 @@ var dateFormatter = DateFormatterPrefix{
 	},
 }
 
-func parseFormatLinux(date time.Time, formatString *string, formatter *DateFormatterPrefix) string {
+func parseFormatWithPrefixToken(date time.Time, formatString *string, formatter *DateFormatterPrefix) string {
 	var formattedDate strings.Builder
 	interpretToken := false
 
