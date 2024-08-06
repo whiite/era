@@ -40,7 +40,8 @@ func (formatter DateFormatterPrefix) Parse(dt time.Time, str *string) string {
 }
 
 type DateFormatterNoPrefix struct {
-	tokenMap map[string]func(dt time.Time) string
+	escapeChars []rune
+	tokenMap    map[string]func(dt time.Time) string
 }
 
 func (formatter DateFormatterNoPrefix) Parse(dt time.Time, str *string) string {
@@ -48,9 +49,18 @@ func (formatter DateFormatterNoPrefix) Parse(dt time.Time, str *string) string {
 
 	tokenNodeRoot := createTokenGraph(&formatter.tokenMap)
 	tokenNode := tokenNodeRoot
+	escapeSupport := len(formatter.escapeChars) > 1
+	escapeMode := false
 
 	for _, char := range *str {
-		if node, hasToken := tokenNode.children[char]; hasToken {
+		if escapeSupport && char == formatter.escapeChars[0] {
+			escapeMode = true
+		}
+		if escapeSupport && char == formatter.escapeChars[1] && escapeMode {
+			escapeMode = false
+		}
+
+		if node, hasToken := tokenNode.children[char]; hasToken && !escapeMode {
 			tokenNode = node
 			continue
 		}
@@ -61,7 +71,7 @@ func (formatter DateFormatterNoPrefix) Parse(dt time.Time, str *string) string {
 		formattedDate.WriteRune(char)
 
 		tokenNode = tokenNodeRoot
-		if node, hasToken := tokenNodeRoot.children[char]; hasToken {
+		if node, hasToken := tokenNodeRoot.children[char]; hasToken && !escapeMode {
 			tokenNode = node
 		}
 	}
@@ -122,6 +132,7 @@ var Strptime = DateFormatterPrefix{
 
 // Formats date strings via the same system as `strptime`
 var MomentJs = DateFormatterNoPrefix{
+	escapeChars: []rune{'[', ']'},
 	tokenMap: map[string]func(dt time.Time) string{
 		"M":    func(dt time.Time) string { return strconv.Itoa(int(dt.Month())) },
 		"Mo":   func(dt time.Time) string { return numberSuffixed(int(dt.Month())) },
