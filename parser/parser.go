@@ -141,13 +141,33 @@ var MomentJs = DateFormatterNoPrefix{
 		"dd":   func(dt time.Time) string { return dt.Weekday().String()[:2] },
 		"ddd":  func(dt time.Time) string { return dt.Weekday().String()[:3] },
 		"dddd": func(dt time.Time) string { return dt.Weekday().String() },
-		"h":    func(dt time.Time) string { return strconv.Itoa(dt.Hour()) },
-		"hh": func(dt time.Time) string {
-			hour := strconv.Itoa(dt.Hour())
-			if len(hour) < 2 {
-				hour = "0" + hour
-			}
-			return hour
+		"H":    func(dt time.Time) string { return strconv.Itoa(dt.Hour()) },
+		"HH": func(dt time.Time) string {
+			return fmt.Sprintf("%02d", dt.Hour())
 		},
+		"h": func(dt time.Time) string { return strconv.Itoa(dt.Hour() % 12) },
+		"hh": func(dt time.Time) string {
+			return fmt.Sprintf("%02d", dt.Hour()%12)
+		},
+		"k": func(dt time.Time) string { return strconv.Itoa(dt.Hour()) },
+		"kk": func(dt time.Time) string {
+			return fmt.Sprintf("%02d", dt.Hour())
+		},
+		"Y": func(dt time.Time) string { return strconv.Itoa(dt.Year()) },
+		"YY": func(dt time.Time) string {
+			yearStr := strconv.Itoa(dt.Year())
+			return yearStr[len(yearStr)-2:]
+		},
+		"YYYY": func(dt time.Time) string { return strconv.Itoa(dt.Year()) },
+		"m":    func(dt time.Time) string { return strconv.Itoa(dt.Minute()) },
+		"mm": func(dt time.Time) string {
+			return fmt.Sprintf("%02d", dt.Minute())
+		},
+		"s": func(dt time.Time) string { return strconv.Itoa(dt.Second()) },
+		"ss": func(dt time.Time) string {
+			return fmt.Sprintf("%02d", dt.Second())
+		},
+		"X": func(dt time.Time) string { return strconv.Itoa(int(dt.Unix())) },
+		"x": func(dt time.Time) string { return strconv.Itoa(int(dt.UnixMilli())) },
 	},
 }
