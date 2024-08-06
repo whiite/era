@@ -46,6 +46,7 @@ type DateFormatterNoPrefix struct {
 
 func (formatter DateFormatterNoPrefix) Parse(dt time.Time, str *string) string {
 	var formattedDate strings.Builder
+	var tokens strings.Builder
 
 	tokenNodeRoot := createTokenGraph(&formatter.tokenMap)
 	tokenNode := tokenNodeRoot
@@ -61,13 +62,17 @@ func (formatter DateFormatterNoPrefix) Parse(dt time.Time, str *string) string {
 		}
 
 		if node, hasToken := tokenNode.children[char]; hasToken && !escapeMode {
+			tokens.WriteRune(char)
 			tokenNode = node
 			continue
 		}
 
 		if formatFunc := tokenNode.value; formatFunc != nil {
 			formattedDate.WriteString(formatFunc(dt))
+		} else {
+			formattedDate.WriteString(tokens.String())
 		}
+		tokens.Reset()
 		formattedDate.WriteRune(char)
 
 		tokenNode = tokenNodeRoot
@@ -78,6 +83,9 @@ func (formatter DateFormatterNoPrefix) Parse(dt time.Time, str *string) string {
 
 	if formatFunc := tokenNode.value; formatFunc != nil {
 		formattedDate.WriteString(formatFunc(dt))
+		tokens.Reset()
+	} else {
+		formattedDate.WriteString(tokens.String())
 	}
 
 	return formattedDate.String()
