@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -63,10 +64,27 @@ func (formatter DateFormatterNoPrefix) Parse(dt time.Time, str *string) string {
 		if node, hasToken := tokenNodeRoot.children[char]; hasToken {
 			tokenNode = node
 		}
+	}
 
+	if formatFunc := tokenNode.value; formatFunc != nil {
+		formattedDate.WriteString(formatFunc(dt))
 	}
 
 	return formattedDate.String()
+}
+
+func numberSuffixed(num int) string {
+	numstr := strconv.Itoa(num)
+	switch numstr {
+	case "1", "21", "31":
+		return numstr + "st"
+	case "2", "22":
+		return numstr + "nd"
+	case "3", "23":
+		return numstr + "rd"
+	default:
+		return numstr + "th"
+	}
 }
 
 // Formats date strings via the same system as `strptime`
@@ -105,29 +123,24 @@ var Strptime = DateFormatterPrefix{
 // Formats date strings via the same system as `strptime`
 var MomentJs = DateFormatterNoPrefix{
 	tokenMap: map[string]func(dt time.Time) string{
-		"M": func(dt time.Time) string { return strconv.Itoa(int(dt.Month())) },
-		"Mo": func(dt time.Time) string {
-			month := strconv.Itoa(int(dt.Month()))
-			switch month {
-			case "1", "21", "31":
-				return month + "st"
-			case "2", "22":
-				return month + "nd"
-			case "3", "23":
-				return month + "rd"
-			default:
-				return month + "th"
-			}
-		},
-		"MM": func(dt time.Time) string {
-			month := strconv.Itoa(int(dt.Month()))
-			if len(month) < 2 {
-				month = "0" + month
-			}
-			return month
-		},
+		"M":    func(dt time.Time) string { return strconv.Itoa(int(dt.Month())) },
+		"Mo":   func(dt time.Time) string { return numberSuffixed(int(dt.Month())) },
+		"MM":   func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Month()) },
 		"MMM":  func(dt time.Time) string { return dt.Month().String()[:3] },
 		"MMMM": func(dt time.Time) string { return dt.Month().String() },
+		"Q":    func(dt time.Time) string { return strconv.Itoa(time.Now().YearDay() % 4) },
+		"Qo":   func(dt time.Time) string { return numberSuffixed(time.Now().YearDay() % 4) },
+		"D":    func(dt time.Time) string { return strconv.Itoa(dt.Day()) },
+		"Do":   func(dt time.Time) string { return numberSuffixed(dt.Day()) },
+		"DD":   func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Day()) },
+		"DDD":  func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Day()) },
+		"DDDo": func(dt time.Time) string { return numberSuffixed(dt.YearDay()) },
+		"DDDD": func(dt time.Time) string { return fmt.Sprintf("%03d", dt.YearDay()) },
+		"d":    func(dt time.Time) string { return strconv.Itoa(int(dt.Weekday())) },
+		"do":   func(dt time.Time) string { return numberSuffixed(int(dt.Weekday())) },
+		"dd":   func(dt time.Time) string { return dt.Weekday().String()[:2] },
+		"ddd":  func(dt time.Time) string { return dt.Weekday().String()[:3] },
+		"dddd": func(dt time.Time) string { return dt.Weekday().String() },
 		"h":    func(dt time.Time) string { return strconv.Itoa(dt.Hour()) },
 		"hh": func(dt time.Time) string {
 			hour := strconv.Itoa(dt.Hour())
