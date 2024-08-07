@@ -50,11 +50,13 @@ var nowCmd = &cobra.Command{
 				return fmt.Errorf("No format string provided")
 			}
 			fmt.Println(parser.MomentJs.Parse(now, &args[0]))
-		default:
+		case "strptime":
 			if len(args) == 0 {
 				return fmt.Errorf("No format string provided")
 			}
 			fmt.Println(parser.Strptime.Parse(now, &args[0]))
+		default:
+			return fmt.Errorf("'%s' is not a supported format", Format)
 		}
 
 		return nil
