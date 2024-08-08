@@ -13,7 +13,8 @@ import (
 var Parser string
 
 func init() {
-	parseCmd.Flags().StringVarP(&Parser, "parser", "p", "", "Parser to interpret supplied time with")
+	parseCmd.Flags().StringVarP(&Format, "format", "f", "", "Format to display the datetime with")
+	parseCmd.Flags().StringVarP(&Parser, "parser", "p", "", "Parser to interpret supplied time wFormat to display the datetime withith")
 	parseCmd.Flags().StringVarP(&TimeZone, "timezone", "t", "", "Time zone to set the time to")
 	rootCmd.AddCommand(parseCmd)
 }
@@ -34,23 +35,34 @@ var parseCmd = &cobra.Command{
 			location = loc
 		}
 
+		var dt time.Time
 		switch strings.ToLower(Parser) {
 		case "unix", "timestamp", "ts", "":
 			unixVal, err := strconv.Atoi(args[0])
 			if err != nil {
 				return fmt.Errorf("Unable to parse '%s' as a unix timestamp", args[0])
 			}
-			res := time.Unix(int64(unixVal), 0).In(location)
-			fmt.Println(res.String())
+			dt = time.Unix(int64(unixVal), 0).In(location)
 		case "iso", "iso8601":
 			time, err := time.Parse("2006-01-02T15:04:05.999Z07:00", args[0])
 			if err != nil {
 				return fmt.Errorf("Unable to parse '%s' as an ISO8601 string", args[0])
 			}
-			fmt.Println(time.In(location))
+			dt = time.In(location)
 		default:
 			return fmt.Errorf("'%s' is not a supported parser", Parser)
 		}
+
+		parseStr := ""
+		if len(args) > 0 {
+			parseStr = args[0]
+		}
+
+		formattedTime, err := FormatTime(dt, Format, parseStr)
+		if err != nil {
+			return err
+		}
+		fmt.Println(formattedTime)
 
 		return nil
 	},

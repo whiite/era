@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"monokuro/era/parser"
+	"strconv"
 	"strings"
 	"time"
 
@@ -36,29 +37,46 @@ var nowCmd = &cobra.Command{
 			now = now.In(location)
 		}
 
-		switch strings.ToLower(Format) {
-		case "unix", "timestamp", "ts":
-			fmt.Println(now.Unix())
-		case "rfc", "rfc3339":
-			fmt.Println(now.Format(time.RFC3339))
-		case "iso", "iso8601":
-			fmt.Println(now.Format("2006-01-02T15:04:05.999Z07:00"))
-		case "go", "":
-			fmt.Println(now)
-		case "moment", "momentjs":
-			if len(args) == 0 {
-				return fmt.Errorf("No format string provided")
-			}
-			fmt.Println(parser.MomentJs.Parse(now, &args[0]))
-		case "strptime":
-			if len(args) == 0 {
-				return fmt.Errorf("No format string provided")
-			}
-			fmt.Println(parser.Strptime.Parse(now, &args[0]))
-		default:
-			return fmt.Errorf("'%s' is not a supported format", Format)
+		parseStr := ""
+		if len(args) > 0 {
+			parseStr = args[0]
 		}
+
+		nowFormatted, err := FormatTime(now, Format, parseStr)
+		if err != nil {
+			return err
+		}
+		fmt.Println(nowFormatted)
 
 		return nil
 	},
+}
+
+func FormatTime(dt time.Time, format string, parseStr string) (string, error) {
+	formattedTime := ""
+
+	switch strings.ToLower(format) {
+	case "unix", "timestamp", "ts":
+		formattedTime = strconv.FormatInt(dt.Unix(), 10)
+	case "rfc", "rfc3339":
+		formattedTime = dt.Format(time.RFC3339)
+	case "iso", "iso8601":
+		formattedTime = dt.Format("2006-01-02T15:04:05.999Z07:00")
+	case "go", "":
+		formattedTime = dt.String()
+	case "moment", "momentjs":
+		if len(parseStr) == 0 {
+			return formattedTime, fmt.Errorf("No format string provided")
+		}
+		formattedTime = parser.MomentJs.Parse(dt, &parseStr)
+	case "strptime":
+		if len(parseStr) == 0 {
+			return formattedTime, fmt.Errorf("No format string provided")
+		}
+		formattedTime = parser.Strptime.Parse(dt, &parseStr)
+	default:
+		return formattedTime, fmt.Errorf("'%s' is not a supported format", parseStr)
+	}
+
+	return formattedTime, nil
 }
