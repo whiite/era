@@ -38,11 +38,11 @@ var parseCmd = &cobra.Command{
 		var dt time.Time
 		switch strings.ToLower(Parser) {
 		case "unix", "timestamp", "ts", "":
-			unixVal, err := strconv.Atoi(args[0])
+			unixVal, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
 				return fmt.Errorf("Unable to parse '%s' as a unix timestamp", args[0])
 			}
-			dt = time.Unix(int64(unixVal), 0).In(location)
+			dt = time.Unix(unixVal, 0).In(location)
 		case "iso", "iso8601":
 			time, err := time.Parse("2006-01-02T15:04:05.999Z07:00", args[0])
 			if err != nil {
