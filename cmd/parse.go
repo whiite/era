@@ -45,7 +45,7 @@ var parseCmd = &cobra.Command{
 		case "iso", "iso8601":
 			time, err := time.Parse("2006-01-02T15:04:05.999Z07:00", args[0])
 			if err != nil {
-				return fmt.Errorf("Unable to parse '%s' as an ISO8601 string")
+				return fmt.Errorf("Unable to parse '%s' as an ISO8601 string", args[0])
 			}
 			fmt.Println(time.In(location))
 		default:
