@@ -37,16 +37,28 @@ var parseCmd = &cobra.Command{
 
 		var dt time.Time
 		switch strings.ToLower(Parser) {
-		case "unix", "timestamp", "ts", "":
+		case "unix", "timestamp", "ts":
 			unixVal, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
 				return fmt.Errorf("Unable to parse '%s' as a unix timestamp", args[0])
 			}
 			dt = time.Unix(unixVal, 0).In(location)
+		case "rfc", "rfc3339":
+			time, err := time.Parse(time.RFC3339, args[0])
+			if err != nil {
+				return fmt.Errorf("Unable to parse '%s' as an RFC3339 string", args[0])
+			}
+			dt = time.In(location)
 		case "iso", "iso8601":
 			time, err := time.Parse("2006-01-02T15:04:05.999Z07:00", args[0])
 			if err != nil {
 				return fmt.Errorf("Unable to parse '%s' as an ISO8601 string", args[0])
+			}
+			dt = time.In(location)
+		case "go", "":
+			time, err := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", args[0])
+			if err != nil {
+				return fmt.Errorf("Unable to parse '%s' as a Go formtat string", args[0])
 			}
 			dt = time.In(location)
 		default:
