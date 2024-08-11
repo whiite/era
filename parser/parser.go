@@ -7,9 +7,16 @@ import (
 	"time"
 )
 
+type FormatToken struct {
+	// Description of what the token represents
+	Desc string
+	// Equivalent string for token given a `time.Time`
+	expand func(dt time.Time) string
+}
+
 type DateFormatterPrefix struct {
-	prefix   rune
-	tokenMap map[rune]func(dt time.Time) string
+	Prefix   rune
+	TokenMap map[rune]FormatToken
 }
 
 func (formatter DateFormatterPrefix) Parse(dt time.Time, str *string) string {
@@ -17,17 +24,16 @@ func (formatter DateFormatterPrefix) Parse(dt time.Time, str *string) string {
 	interpretToken := false
 
 	for _, char := range *str {
-		if char == formatter.prefix {
+		if char == formatter.Prefix {
 			if interpretToken {
-				formattedDate.WriteRune(formatter.prefix)
+				formattedDate.WriteRune(formatter.Prefix)
 			}
 			interpretToken = true
 			continue
 		}
 
-		formatFunc := formatter.tokenMap[char]
-		if interpretToken && formatFunc != nil {
-			formattedDate.WriteString(formatFunc(dt))
+		if token, hasToken := formatter.TokenMap[char]; interpretToken && hasToken {
+			formattedDate.WriteString(token.expand(dt))
 			interpretToken = false
 			continue
 		}
@@ -106,47 +112,127 @@ func numberSuffixed(num int) string {
 
 // Formats date strings via the same system as `strptime`
 var Strptime = DateFormatterPrefix{
-	prefix: '%',
-	tokenMap: map[rune]func(dt time.Time) string{
-		'%': func(dt time.Time) string { return "%" },
-		'A': func(dt time.Time) string { return dt.Weekday().String() },
-		'a': func(dt time.Time) string { return dt.Weekday().String()[:3] },
-		'B': func(dt time.Time) string { return dt.Month().String() },
-		'b': func(dt time.Time) string { return dt.Month().String()[:3] },
-		'h': func(dt time.Time) string { return dt.Month().String()[:3] },
-		'c': func(dt time.Time) string { return dt.Format("Mon _2 Jan 15:04:05 2006") },
-		'C': func(dt time.Time) string { return strconv.Itoa(dt.Year() / 100) },
-		'd': func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Day()) },
-		'e': func(dt time.Time) string { return strconv.Itoa(dt.Day()) },
-		'D': func(dt time.Time) string {
-			return fmt.Sprintf("%02d/%02d/%02d", dt.Month(), dt.Day(), dt.Year()%100)
+	Prefix: '%',
+	TokenMap: map[rune]FormatToken{
+		'%': {
+			Desc:   "'%' character literal",
+			expand: func(dt time.Time) string { return "%" },
 		},
-		'H': func(dt time.Time) string { return strconv.Itoa(dt.Hour()) },
-		'I': func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Hour()%12) },
-		'j': func(dt time.Time) string { return strconv.Itoa(dt.YearDay()) },
-		'm': func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Month()) },
-		'M': func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Minute()) },
-		'n': func(dt time.Time) string { return "\n" },
-		'S': func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Second()) },
-		'R': func(dt time.Time) string { return fmt.Sprintf("%02d:%02d", dt.Hour(), dt.Minute()) },
-		't': func(dt time.Time) string { return "\t" },
-		'T': func(dt time.Time) string {
-			return fmt.Sprintf("%02d:%02d:%02d", dt.Hour(), dt.Minute(), dt.Second())
+		'A': {
+			Desc:   "Full weekday name - 'Monday', 'Tuesday'",
+			expand: func(dt time.Time) string { return dt.Weekday().String() },
 		},
-		'U': func(dt time.Time) string {
-			_, weekNumber := dt.ISOWeek()
-			return fmt.Sprintf("%02d", weekNumber)
+		'a': {
+			Desc:   "Shortened weekday name to three characters - 'Mon', 'Tue'",
+			expand: func(dt time.Time) string { return dt.Weekday().String()[:3] },
 		},
-		'w': func(dt time.Time) string { return strconv.Itoa(int(dt.Weekday())) },
-		'W': func(dt time.Time) string {
-			_, week := dt.ISOWeek()
-			return fmt.Sprintf("%02d", week)
+		'B': {
+			Desc:   "Full month name - 'January', 'February'",
+			expand: func(dt time.Time) string { return dt.Month().String() },
+		},
+		'b': {
+			Desc:   "Shortened month name to three characters - 'Jan', 'Feb'",
+			expand: func(dt time.Time) string { return dt.Month().String()[:3] },
+		},
+		'h': {
+			Desc:   "Shortened month name to three characters - 'Jan', 'Feb'",
+			expand: func(dt time.Time) string { return dt.Month().String()[:3] },
+		},
+		'c': {
+			Desc:   "Date and time for the current locale (different to strptime and hardcoded to UK format currently)",
+			expand: func(dt time.Time) string { return dt.Format("Mon _2 Jan 15:04:05 2006") },
+		},
+		'C': {
+			Desc:   "The century number (0–99)",
+			expand: func(dt time.Time) string { return strconv.Itoa(dt.Year() / 100) },
+		},
+		'd': {
+			Desc:   "Day of month zero padded to two digits (01-31)",
+			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Day()) },
+		},
+		'e': {
+			Desc:   "Day of month (1-31)",
+			expand: func(dt time.Time) string { return strconv.Itoa(dt.Day()) },
+		},
+		'D': {
+			Desc: "American style date (month first) equivalent to '%m/%d/%y'",
+			expand: func(dt time.Time) string {
+				return fmt.Sprintf("%02d/%02d/%02d", dt.Month(), dt.Day(), dt.Year()%100)
+			},
+		},
+		'H': {
+			Desc:   "Hour in 24 hour format zero padded to two digits (00-23)",
+			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Hour()) },
+		},
+		'I': {
+			Desc:   "Hour in 12 hour format zero padded to two digits (01-12)",
+			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Hour()%12) },
+		},
+		'j': {
+			Desc:   "Day of year zero padded to three digits (001-366)",
+			expand: func(dt time.Time) string { return fmt.Sprintf("%03d", dt.YearDay()) },
+		},
+		'm': {
+			Desc:   "Month number zero padded to two digits (01-12)",
+			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Month()) },
+		},
+		'M': {
+			Desc:   "Minutes zero padded to two digits (00-59)",
+			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Minute()) },
+		},
+		'n': {
+			Desc:   "Newline whitespace - '\\n'",
+			expand: func(dt time.Time) string { return "\n" },
+		},
+		'R': {
+			Desc:   "Time represented as hours and minutes equivalent to %H:%M - '12:24', '04:09'",
+			expand: func(dt time.Time) string { return fmt.Sprintf("%02d:%02d", dt.Hour(), dt.Minute()) },
+		},
+		'S': {
+			Desc:   "Seconds zero padded to two digits (00-60; 60 may occur for for leap seconds)",
+			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Second()) },
+		},
+		't': {
+			Desc:   "Tab whitespace - '\\t'",
+			expand: func(dt time.Time) string { return "\t" },
+		},
+		'T': {
+			Desc: "Time represented as hours, minutes and seconds equivalent to %H:%M:%S - '12:34:03', '04:09:59'",
+			expand: func(dt time.Time) string {
+				return fmt.Sprintf("%02d:%02d:%02d", dt.Hour(), dt.Minute(), dt.Second())
+			},
+		},
+		// TODO: implement same rules as strptime - first week is the first Sunday of January
+		'U': {
+			Desc: "ISO8601 week number of the year (this is different to the typical strptime token currently)",
+			expand: func(dt time.Time) string {
+				_, weekNumber := dt.ISOWeek()
+				return fmt.Sprintf("%02d", weekNumber)
+			},
+		},
+		'w': {
+			Desc:   "Day of week number (0-6) where Sunday is 0 and Saturday is 6",
+			expand: func(dt time.Time) string { return strconv.Itoa(int(dt.Weekday())) },
+		},
+		// TODO: implement same rules as strptime - first week is the first Monday of January
+		'W': {
+			Desc: "ISO8601 week number of the year (this is different to the typical strptime token currently)",
+			expand: func(dt time.Time) string {
+				_, week := dt.ISOWeek()
+				return fmt.Sprintf("%02d", week)
+			},
 		},
 		// NOTE: haven't found a locale aware version of these:
 		// 'x': func(dt time.Time) string { return dt.Format("01/02/06") },
 		// 'X': func(dt time.Time) string { return dt.Format(time.TimeOnly) },
-		'y': func(dt time.Time) string { return strconv.Itoa(dt.Year() % 100) },
-		'Y': func(dt time.Time) string { return strconv.Itoa(dt.Year()) },
+		'y': {
+			Desc:   "The year within the century zero padded to two digits (00-99)",
+			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Year()%100) },
+		},
+		'Y': {
+			Desc:   "Year number - '1999', '2007'",
+			expand: func(dt time.Time) string { return strconv.Itoa(dt.Year()) },
+		},
 	},
 }
 
