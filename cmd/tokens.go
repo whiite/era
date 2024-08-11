@@ -22,7 +22,11 @@ var tokensCmd = &cobra.Command{
 			if len(args) == 0 {
 				return fmt.Errorf("Showing all tokens not supported yet. Please specify at least one token")
 			}
-			fmt.Println("Unsupported currently")
+			token, hasToken := parser.MomentJs.TokenMap[args[0]]
+			if !hasToken {
+				return fmt.Errorf("Token '%s' is not supported for this parser", args[0])
+			}
+			fmt.Printf("'%s': %s\n", args[0], token.Desc)
 		case "strptime":
 			if len(args) == 0 {
 				return fmt.Errorf("Showing all tokens not supported yet. Please specify at least one token")
