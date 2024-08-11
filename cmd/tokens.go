@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"monokuro/era/parser"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -20,13 +21,29 @@ var tokensCmd = &cobra.Command{
 		switch Parser {
 		case "moment", "momentjs":
 			if len(args) == 0 {
-				return fmt.Errorf("Showing all tokens not supported yet. Please specify at least one token")
+				args = make([]string, len(parser.MomentJs.TokenMap))
+				idx := 0
+				for token := range parser.MomentJs.TokenMap {
+					args[idx] = token
+					idx += 1
+				}
 			}
-			token, hasToken := parser.MomentJs.TokenMap[args[0]]
-			if !hasToken {
-				return fmt.Errorf("Token '%s' is not supported for this parser", args[0])
+
+			var validOutput strings.Builder
+			var invalidOutput strings.Builder
+			for _, arg := range args {
+				if token, hasToken := parser.MomentJs.TokenMap[arg]; hasToken {
+					validOutput.WriteString(fmt.Sprintf("'%s': %s\n", arg, token.Desc))
+					continue
+				}
+				invalidOutput.WriteString(fmt.Sprintf("Token '%s' is not supported for this parser", arg))
 			}
-			fmt.Printf("'%s': %s\n", args[0], token.Desc)
+
+			if validOutput.Len() == 0 {
+				return fmt.Errorf(invalidOutput.String())
+			}
+
+			fmt.Print(validOutput.String(), invalidOutput.String())
 		case "strptime":
 			if len(args) == 0 {
 				return fmt.Errorf("Showing all tokens not supported yet. Please specify at least one token")
