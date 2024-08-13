@@ -20,10 +20,11 @@ var tokensCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		switch Parser {
 		case "moment", "momentjs":
+			selectedParser := parser.MomentJs
 			if len(args) == 0 {
-				args = make([]string, len(parser.MomentJs.TokenMap))
+				args = make([]string, len(selectedParser.TokenMap))
 				idx := 0
-				for token := range parser.MomentJs.TokenMap {
+				for token := range selectedParser.TokenMap {
 					args[idx] = token
 					idx += 1
 				}
@@ -32,7 +33,33 @@ var tokensCmd = &cobra.Command{
 			var validOutput strings.Builder
 			var invalidOutput strings.Builder
 			for _, arg := range args {
-				if token, hasToken := parser.MomentJs.TokenMap[arg]; hasToken {
+				if token, hasToken := selectedParser.TokenMap[arg]; hasToken {
+					validOutput.WriteString(fmt.Sprintf("'%s': %s\n", arg, token.Desc))
+					continue
+				}
+				invalidOutput.WriteString(fmt.Sprintf("Token '%s' is not supported for this parser", arg))
+			}
+
+			if validOutput.Len() == 0 {
+				return fmt.Errorf(invalidOutput.String())
+			}
+
+			fmt.Print(validOutput.String(), invalidOutput.String())
+		case "luxon":
+			selectedParser := parser.Luxon
+			if len(args) == 0 {
+				args = make([]string, len(selectedParser.TokenMap))
+				idx := 0
+				for token := range selectedParser.TokenMap {
+					args[idx] = token
+					idx += 1
+				}
+			}
+
+			var validOutput strings.Builder
+			var invalidOutput strings.Builder
+			for _, arg := range args {
+				if token, hasToken := selectedParser.TokenMap[arg]; hasToken {
 					validOutput.WriteString(fmt.Sprintf("'%s': %s\n", arg, token.Desc))
 					continue
 				}

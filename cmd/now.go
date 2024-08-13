@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	_ "time/tzdata"
 
 	"github.com/spf13/cobra"
 )
@@ -69,6 +70,11 @@ func FormatTime(dt time.Time, format string, parseStr string) (string, error) {
 			return formattedTime, fmt.Errorf("No format string provided")
 		}
 		formattedTime = parser.MomentJs.Parse(dt, &parseStr)
+	case "luxon":
+		if len(parseStr) == 0 {
+			return formattedTime, fmt.Errorf("No format string provided")
+		}
+		formattedTime = parser.Luxon.Parse(dt, &parseStr)
 	case "strptime":
 		if len(parseStr) == 0 {
 			return formattedTime, fmt.Errorf("No format string provided")
