@@ -505,10 +505,6 @@ var Luxon = DateFormatterNoPrefix{
 			Desc:   "Year number zero padded to four digits - '1999', '0007'",
 			expand: func(dt time.Time) string { return fmt.Sprintf("%04d", dt.Year()) },
 		},
-		"YYYYYY": {
-			Desc:   "Year number zeo padded to 6 digits - '001999', '002007'",
-			expand: func(dt time.Time) string { return fmt.Sprintf("%06d", dt.Year()) },
-		},
 		"m": {
 			Desc:   "Minutes (0-59)",
 			expand: func(dt time.Time) string { return strconv.Itoa(dt.Minute()) },
