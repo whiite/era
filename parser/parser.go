@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -12,6 +13,10 @@ type FormatToken[T any] struct {
 	// Equivalent string for token given a `time.Time`
 	expand  func(dt time.Time) string
 	aliases []T
+}
+
+type DateFormatter interface {
+	TokenDesc() string
 }
 
 type DateFormatterPrefix struct {
@@ -43,6 +48,14 @@ func (formatter DateFormatterPrefix) Parse(dt time.Time, str *string) string {
 	}
 
 	return formattedDate.String()
+}
+
+func (formatter DateFormatterPrefix) TokenDesc() string {
+	var output strings.Builder
+	for tokenChar, tokenDef := range formatter.TokenMap {
+		output.WriteString(fmt.Sprintf("%c%c: %s\n", formatter.Prefix, tokenChar, tokenDef.Desc))
+	}
+	return output.String()
 }
 
 type DateFormatterNoPrefix struct {
@@ -104,6 +117,14 @@ func (formatter DateFormatterNoPrefix) Parse(dt time.Time, str *string) string {
 	}
 
 	return formattedDate.String()
+}
+
+func (formatter DateFormatterNoPrefix) TokenDesc() string {
+	var output strings.Builder
+	for tokenStr, tokenDef := range formatter.TokenMap {
+		output.WriteString(fmt.Sprintf("%s: %s\n", tokenStr, tokenDef.Desc))
+	}
+	return output.String()
 }
 
 func numberSuffixed(num int) string {
