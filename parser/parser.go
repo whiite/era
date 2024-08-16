@@ -394,55 +394,6 @@ var Luxon = DateFormatterNoPrefix{
 			},
 			aliases: []string{"L"},
 		},
-		"M": {
-			Desc:    "Month number (1-12)",
-			expand:  func(dt time.Time) string { return strconv.Itoa(int(dt.Month())) },
-			aliases: []string{"L"},
-		},
-		"MM": {
-			Desc:    "Month number zero padded to two digits - (01-12)",
-			expand:  func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Month()) },
-			aliases: []string{"LL"},
-		},
-		"MMM": {
-			Desc:    "Month name truncated to three characters - 'Jan', 'Feb'",
-			expand:  func(dt time.Time) string { return dt.Month().String()[:3] },
-			aliases: []string{"LLL"},
-		},
-		"MMMM": {
-			Desc:    "Month name - 'January', 'February'",
-			expand:  func(dt time.Time) string { return dt.Month().String() },
-			aliases: []string{"LLLL"},
-		},
-		"MMMMM": {
-			Desc:    "Month name truncated to one character - 'J', 'F'",
-			expand:  func(dt time.Time) string { return dt.Month().String()[:1] },
-			aliases: []string{"LLLLL"},
-		},
-		"q": {
-			Desc:   "Quarter of year (1-4)",
-			expand: func(dt time.Time) string { return strconv.Itoa(time.Now().YearDay() % 4) },
-		},
-		"qq": {
-			Desc:   "Quarter of year zero padded to two digits (01-04)",
-			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", time.Now().YearDay()%4) },
-		},
-		"d": {
-			Desc:   "Day of month (1-31)",
-			expand: func(dt time.Time) string { return strconv.Itoa(dt.Day()) },
-		},
-		"dd": {
-			Desc:   "Day of month zero padded to two digits (01-31)",
-			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Day()) },
-		},
-		"o": {
-			Desc:   "Ordinal day of year (1-366)",
-			expand: func(dt time.Time) string { return strconv.Itoa(dt.YearDay()) },
-		},
-		"ooo": {
-			Desc:   "Ordinal day of year zero padded to three digits (001-366)",
-			expand: func(dt time.Time) string { return fmt.Sprintf("%03d", dt.YearDay()) },
-		},
 		"c": {
 			Desc:    "Day of week where Monday = 1 and Sunday = 7 (1-7)",
 			expand:  func(dt time.Time) string { return strconv.Itoa((7+int(dt.Weekday()))%7 + 1) },
@@ -463,6 +414,41 @@ var Luxon = DateFormatterNoPrefix{
 			expand:  func(dt time.Time) string { return dt.Weekday().String()[:1] },
 			aliases: []string{"EEEEE"},
 		},
+		"d": {
+			Desc:   "Day of month (1-31)",
+			expand: func(dt time.Time) string { return strconv.Itoa(dt.Day()) },
+		},
+		"dd": {
+			Desc:   "Day of month zero padded to two digits (01-31)",
+			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Day()) },
+		},
+		"G": {
+			Desc: "Era name abbreviated - 'BC', 'AD'",
+			expand: func(dt time.Time) string {
+				if dt.Year() < 0 {
+					return "BC"
+				}
+				return "AD"
+			},
+		},
+		"GG": {
+			Desc: "Era name abbreviated - 'Before Christ', 'Anno Domini'",
+			expand: func(dt time.Time) string {
+				if dt.Year() < 0 {
+					return "Before Christ"
+				}
+				return "Anno Domini"
+			},
+		},
+		"GGGGG": {
+			Desc: "Era name abbreviated to one character - 'B', 'A'",
+			expand: func(dt time.Time) string {
+				if dt.Year() < 0 {
+					return "B"
+				}
+				return "A"
+			},
+		},
 		"H": {
 			Desc:   "Hour in 24 hour format (0-23)",
 			expand: func(dt time.Time) string { return strconv.Itoa(dt.Hour()) },
@@ -479,7 +465,7 @@ var Luxon = DateFormatterNoPrefix{
 			Desc:   "Hour in 12 hour format zero padded to two digits (01-12)",
 			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Hour()%12) },
 		},
-		"kK": {
+		"kk": {
 			Desc: "ISO week year shortened to the last two digits - '99, '07'",
 			expand: func(dt time.Time) string {
 				year, _ := dt.ISOWeek()
@@ -493,17 +479,30 @@ var Luxon = DateFormatterNoPrefix{
 				return fmt.Sprintf("%04d", year)
 			},
 		},
-		"y": {
-			Desc:   "Year number - '1999', '2007'",
-			expand: func(dt time.Time) string { return strconv.Itoa(dt.Year()) },
+		"L": {
+			Desc:    "Month number (1-12)",
+			expand:  func(dt time.Time) string { return strconv.Itoa(int(dt.Month())) },
+			aliases: []string{"M"},
 		},
-		"yy": {
-			Desc:   "Year number truncated to last two digits - '99', '07'",
-			expand: func(dt time.Time) string { return strconv.Itoa(dt.Year() % 100) },
+		"LL": {
+			Desc:    "Month number zero padded to two digits - (01-12)",
+			expand:  func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Month()) },
+			aliases: []string{"MM"},
 		},
-		"yyyy": {
-			Desc:   "Year number zero padded to four digits - '1999', '0007'",
-			expand: func(dt time.Time) string { return fmt.Sprintf("%04d", dt.Year()) },
+		"LLL": {
+			Desc:    "Month name truncated to three characters - 'Jan', 'Feb'",
+			expand:  func(dt time.Time) string { return dt.Month().String()[:3] },
+			aliases: []string{"MMM"},
+		},
+		"LLLL": {
+			Desc:    "Month name - 'January', 'February'",
+			expand:  func(dt time.Time) string { return dt.Month().String() },
+			aliases: []string{"MMMM"},
+		},
+		"LLLLL": {
+			Desc:    "Month name truncated to one character - 'J', 'F'",
+			expand:  func(dt time.Time) string { return dt.Month().String()[:1] },
+			aliases: []string{"MMMMM"},
 		},
 		"m": {
 			Desc:   "Minutes (0-59)",
@@ -512,6 +511,22 @@ var Luxon = DateFormatterNoPrefix{
 		"mm": {
 			Desc:   "Minutes zero padded to two digits (00-59)",
 			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Minute()) },
+		},
+		"o": {
+			Desc:   "Ordinal day of year (1-366)",
+			expand: func(dt time.Time) string { return strconv.Itoa(dt.YearDay()) },
+		},
+		"ooo": {
+			Desc:   "Ordinal day of year zero padded to three digits (001-366)",
+			expand: func(dt time.Time) string { return fmt.Sprintf("%03d", dt.YearDay()) },
+		},
+		"q": {
+			Desc:   "Quarter of year (1-4)",
+			expand: func(dt time.Time) string { return strconv.Itoa(time.Now().YearDay() % 4) },
+		},
+		"qq": {
+			Desc:   "Quarter of year zero padded to two digits (01-04)",
+			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", time.Now().YearDay()%4) },
 		},
 		"s": {
 			Desc:   "Seconds (0-59)",
@@ -536,6 +551,7 @@ var Luxon = DateFormatterNoPrefix{
 				_, week := dt.ISOWeek()
 				return strconv.Itoa(week)
 			},
+			aliases: []string{"n"},
 		},
 		"WW": {
 			Desc: "ISO week zero padded to two digits (01-53)",
@@ -543,6 +559,15 @@ var Luxon = DateFormatterNoPrefix{
 				_, week := dt.ISOWeek()
 				return fmt.Sprintf("%02d", week)
 			},
+			aliases: []string{"nn"},
+		},
+		"uu": {
+			Desc:   "Fractional seconds zero padded to two digits (00-99)",
+			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Nanosecond()/10_000_000) },
+		},
+		"uuu": {
+			Desc:   "Fractional seconds between 0 and 9 (0-9)",
+			expand: func(dt time.Time) string { return fmt.Sprintf("%d", dt.Nanosecond()/100_000_000) },
 		},
 		"X": {
 			Desc:   "Unix timestamp in seconds",
@@ -551,6 +576,20 @@ var Luxon = DateFormatterNoPrefix{
 		"x": {
 			Desc:   "Unix timestamp in milliseconds",
 			expand: func(dt time.Time) string { return strconv.Itoa(int(dt.UnixMilli())) },
+		},
+		"y": {
+			Desc:   "Year number - '1999', '2007'",
+			expand: func(dt time.Time) string { return strconv.Itoa(dt.Year()) },
+		},
+		"yy": {
+			Desc:    "Year number truncated to last two digits - '99', '07'",
+			expand:  func(dt time.Time) string { return strconv.Itoa(dt.Year() % 100) },
+			aliases: []string{"ii"},
+		},
+		"yyyy": {
+			Desc:    "Year number zero padded to four digits - '1999', '0007'",
+			expand:  func(dt time.Time) string { return fmt.Sprintf("%04d", dt.Year()) },
+			aliases: []string{"iiii"},
 		},
 		"z": {
 			Desc:   "IANA canonical time zone string - 'Europe/London'",
