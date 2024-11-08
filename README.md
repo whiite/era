@@ -24,3 +24,7 @@ era now
 # Prints the current time as a unix timestamp
 era now --format unix
 ```
+
+## Under consideration
+
+- [ ] Better UX for locale names - (possibly using: https://pkg.go.dev/github.com/zlasd/tzloc)
