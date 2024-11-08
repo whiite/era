@@ -15,7 +15,7 @@ var Parser string
 
 func init() {
 	parseCmd.Flags().StringVarP(&Format, "format", "f", "", "Format to display the datetime with")
-	parseCmd.Flags().StringVarP(&Parser, "parser", "p", "", "Parser to interpret supplied time wFormat to display the datetime withith")
+	parseCmd.Flags().StringVarP(&Parser, "parser", "p", "", "Parser to interpret supplied time wFormat to display the datetime with")
 	parseCmd.Flags().StringVarP(&TimeZone, "timezone", "t", "", "Time zone to set the time to")
 	rootCmd.AddCommand(parseCmd)
 }
@@ -23,7 +23,7 @@ func init() {
 var parseCmd = &cobra.Command{
 	Use:   "parse",
 	Short: "Parse a given time",
-	Long:  "Parse a given time in order to maniuplate; convert or output it in a different format",
+	Long:  "Parse a given time in order to manipulate; convert or output it in a different format",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		location := time.Now().Local().Location()
