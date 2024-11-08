@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"github.com/go-playground/locales"
 	"strconv"
 	"time"
 )
@@ -12,7 +13,8 @@ var Luxon = DateFormatterNoPrefix{
 	TokenMap: map[string]FormatToken[string]{
 		"a": {
 			Desc: "Meridiem - 'AM'",
-			expand: func(dt time.Time) string {
+			expand: func(dt time.Time, locale locales.Translator) string {
+				// TODO: locale
 				if dt.Hour() < 12 {
 					return "AM"
 				}
@@ -21,36 +23,69 @@ var Luxon = DateFormatterNoPrefix{
 			aliases: []string{"L"},
 		},
 		"c": {
-			Desc:    "Day of week where Monday = 1 and Sunday = 7 (1-7)",
-			expand:  func(dt time.Time) string { return strconv.Itoa((7+int(dt.Weekday()))%7 + 1) },
+			Desc: "Day of week where Monday = 1 and Sunday = 7 (1-7)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return strconv.Itoa((7+int(dt.Weekday()))%7 + 1)
+			},
 			aliases: []string{"E"},
 		},
 		"ccc": {
-			Desc:    "Day of week name truncated to three characters - 'Sun', 'Mon'",
-			expand:  func(dt time.Time) string { return dt.Weekday().String()[:3] },
+			Desc: "Day of week name truncated to three characters - 'Sun', 'Mon'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.WeekdayWide(dt.Weekday())[:3]
+			},
 			aliases: []string{"EEE"},
 		},
 		"cccc": {
-			Desc:    "Day of week name - 'Sunday', 'Monday'",
-			expand:  func(dt time.Time) string { return dt.Weekday().String() },
+			Desc: "Day of week name - 'Sunday', 'Monday'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.WeekdayWide(dt.Weekday())
+			},
 			aliases: []string{"EEEE"},
 		},
 		"ccccc": {
-			Desc:    "Day of week name truncated to one character - 'S', 'M'",
-			expand:  func(dt time.Time) string { return dt.Weekday().String()[:1] },
+			Desc: "Day of week name truncated to one character - 'S', 'M'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.WeekdayNarrow(dt.Weekday())
+			},
 			aliases: []string{"EEEEE"},
 		},
 		"d": {
 			Desc:   "Day of month (1-31)",
-			expand: func(dt time.Time) string { return strconv.Itoa(dt.Day()) },
+			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Day()) },
 		},
 		"dd": {
 			Desc:   "Day of month zero padded to two digits (01-31)",
-			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Day()) },
+			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Day()) },
+		},
+		"D": {
+			Desc: "Localised numerical date - '08/11/24'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.FmtDateShort(dt)
+			},
+		},
+		"DD": {
+			Desc: "Localised date with abbreviated month name - 'Nov 8, 2024'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.FmtDateMedium(dt)
+			},
+		},
+		"DDD": {
+			Desc: "Localised date with month name - 'November 8, 2024'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.FmtDateLong(dt)
+			},
+		},
+		"DDDD": {
+			Desc: "Localised date with weekday and month name - 'Friday, November 8, 2024'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.FmtDateFull(dt)
+			},
 		},
 		"G": {
 			Desc: "Era name abbreviated - 'BC', 'AD'",
-			expand: func(dt time.Time) string {
+			expand: func(dt time.Time, locale locales.Translator) string {
+				// TODO: locale
 				if dt.Year() < 0 {
 					return "BC"
 				}
@@ -59,7 +94,8 @@ var Luxon = DateFormatterNoPrefix{
 		},
 		"GG": {
 			Desc: "Era name abbreviated - 'Before Christ', 'Anno Domini'",
-			expand: func(dt time.Time) string {
+			expand: func(dt time.Time, locale locales.Translator) string {
+				// TODO: locale
 				if dt.Year() < 0 {
 					return "Before Christ"
 				}
@@ -68,7 +104,8 @@ var Luxon = DateFormatterNoPrefix{
 		},
 		"GGGGG": {
 			Desc: "Era name abbreviated to one character - 'B', 'A'",
-			expand: func(dt time.Time) string {
+			expand: func(dt time.Time, locale locales.Translator) string {
+				// TODO: locale
 				if dt.Year() < 0 {
 					return "B"
 				}
@@ -77,103 +114,137 @@ var Luxon = DateFormatterNoPrefix{
 		},
 		"H": {
 			Desc:   "Hour in 24 hour format (0-23)",
-			expand: func(dt time.Time) string { return strconv.Itoa(dt.Hour()) },
+			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Hour()) },
 		},
 		"HH": {
 			Desc:   "Hour in 24 hour format zero padded to two digits (00-23)",
-			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Hour()) },
+			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Hour()) },
 		},
 		"h": {
 			Desc:   "Hour in 12 hour format (1-12)",
-			expand: func(dt time.Time) string { return strconv.Itoa(dt.Hour() % 12) },
+			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Hour() % 12) },
 		},
 		"hh": {
 			Desc:   "Hour in 12 hour format zero padded to two digits (01-12)",
-			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Hour()%12) },
+			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Hour()%12) },
 		},
 		"kk": {
 			Desc: "ISO week year shortened to the last two digits - '99, '07'",
-			expand: func(dt time.Time) string {
+			expand: func(dt time.Time, locale locales.Translator) string {
 				year, _ := dt.ISOWeek()
 				return fmt.Sprintf("%02d", year%100)
 			},
 		},
 		"kkkk": {
 			Desc: "ISO week year zero padded to four digits - '1999', '2007'",
-			expand: func(dt time.Time) string {
+			expand: func(dt time.Time, locale locales.Translator) string {
 				year, _ := dt.ISOWeek()
 				return fmt.Sprintf("%04d", year)
 			},
 		},
 		"L": {
 			Desc:    "Month number (1-12)",
-			expand:  func(dt time.Time) string { return strconv.Itoa(int(dt.Month())) },
+			expand:  func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(int(dt.Month())) },
 			aliases: []string{"M"},
 		},
 		"LL": {
 			Desc:    "Month number zero padded to two digits - (01-12)",
-			expand:  func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Month()) },
+			expand:  func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Month()) },
 			aliases: []string{"MM"},
 		},
 		"LLL": {
-			Desc:    "Month name truncated to three characters - 'Jan', 'Feb'",
-			expand:  func(dt time.Time) string { return dt.Month().String()[:3] },
+			Desc: "Month name truncated to three characters - 'Jan', 'Feb'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.MonthWide(dt.Month())[:3]
+			},
 			aliases: []string{"MMM"},
 		},
 		"LLLL": {
-			Desc:    "Month name - 'January', 'February'",
-			expand:  func(dt time.Time) string { return dt.Month().String() },
+			Desc: "Month name - 'January', 'February'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.MonthWide(dt.Month())
+			},
 			aliases: []string{"MMMM"},
 		},
 		"LLLLL": {
-			Desc:    "Month name truncated to one character - 'J', 'F'",
-			expand:  func(dt time.Time) string { return dt.Month().String()[:1] },
+			Desc: "Month name truncated to one character - 'J', 'F'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.MonthNarrow(dt.Month())
+			},
 			aliases: []string{"MMMMM"},
 		},
 		"m": {
 			Desc:   "Minutes (0-59)",
-			expand: func(dt time.Time) string { return strconv.Itoa(dt.Minute()) },
+			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Minute()) },
 		},
 		"mm": {
 			Desc:   "Minutes zero padded to two digits (00-59)",
-			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Minute()) },
+			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Minute()) },
 		},
 		"o": {
 			Desc:   "Ordinal day of year (1-366)",
-			expand: func(dt time.Time) string { return strconv.Itoa(dt.YearDay()) },
+			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.YearDay()) },
 		},
 		"ooo": {
 			Desc:   "Ordinal day of year zero padded to three digits (001-366)",
-			expand: func(dt time.Time) string { return fmt.Sprintf("%03d", dt.YearDay()) },
+			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%03d", dt.YearDay()) },
 		},
 		"q": {
 			Desc:   "Quarter of year (1-4)",
-			expand: func(dt time.Time) string { return strconv.Itoa(time.Now().YearDay() % 4) },
+			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(time.Now().YearDay() % 4) },
 		},
 		"qq": {
-			Desc:   "Quarter of year zero padded to two digits (01-04)",
-			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", time.Now().YearDay()%4) },
+			Desc: "Quarter of year zero padded to two digits (01-04)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%02d", time.Now().YearDay()%4)
+			},
 		},
 		"s": {
 			Desc:   "Seconds (0-59)",
-			expand: func(dt time.Time) string { return strconv.Itoa(dt.Second()) },
+			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Second()) },
 		},
 		"ss": {
 			Desc:   "Seconds zero padded to two digits (00-59)",
-			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Second()) },
+			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Second()) },
 		},
 		"S": {
 			Desc:   "Milliseconds (0-999)",
-			expand: func(dt time.Time) string { return strconv.Itoa(dt.Nanosecond() / 1_000_000) },
+			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Nanosecond() / 1_000_000) },
 		},
 		"SSS": {
-			Desc:    "Milliseconds zero padded to three digits (000-999)",
-			expand:  func(dt time.Time) string { return fmt.Sprintf("%03d", dt.Nanosecond()/1_000_000) },
+			Desc: "Milliseconds zero padded to three digits (000-999)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%03d", dt.Nanosecond()/1_000_000)
+			},
 			aliases: []string{"u"},
+		},
+		"t": {
+			Desc: "Localised time - '9:07 AM'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.FmtTimeShort(dt)
+			},
+		},
+		"tt": {
+			Desc: "Localised time with seconds - '9:07:53 AM'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.FmtTimeMedium(dt)
+			},
+		},
+		"ttt": {
+			Desc: "Localised time with seconds and abbreviated offset name - '9:07:53 AM EDT'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.FmtTimeLong(dt)
+			},
+		},
+		"tttt": {
+			Desc: "Localised time with seconds and offset name - '9:07:53 AM Eastern Daylight Time'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.FmtTimeFull(dt)
+			},
 		},
 		"W": {
 			Desc: "ISO week (1-53)",
-			expand: func(dt time.Time) string {
+			expand: func(dt time.Time, locale locales.Translator) string {
 				_, week := dt.ISOWeek()
 				return strconv.Itoa(week)
 			},
@@ -181,49 +252,55 @@ var Luxon = DateFormatterNoPrefix{
 		},
 		"WW": {
 			Desc: "ISO week zero padded to two digits (01-53)",
-			expand: func(dt time.Time) string {
+			expand: func(dt time.Time, locale locales.Translator) string {
 				_, week := dt.ISOWeek()
 				return fmt.Sprintf("%02d", week)
 			},
 			aliases: []string{"nn"},
 		},
 		"uu": {
-			Desc:   "Fractional seconds zero padded to two digits (00-99)",
-			expand: func(dt time.Time) string { return fmt.Sprintf("%02d", dt.Nanosecond()/10_000_000) },
+			Desc: "Fractional seconds zero padded to two digits (00-99)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%02d", dt.Nanosecond()/10_000_000)
+			},
 		},
 		"uuu": {
-			Desc:   "Fractional seconds between 0 and 9 (0-9)",
-			expand: func(dt time.Time) string { return fmt.Sprintf("%d", dt.Nanosecond()/100_000_000) },
+			Desc: "Fractional seconds between 0 and 9 (0-9)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%d", dt.Nanosecond()/100_000_000)
+			},
 		},
 		"X": {
 			Desc:   "Unix timestamp in seconds",
-			expand: func(dt time.Time) string { return strconv.Itoa(int(dt.Unix())) },
+			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(int(dt.Unix())) },
 		},
 		"x": {
 			Desc:   "Unix timestamp in milliseconds",
-			expand: func(dt time.Time) string { return strconv.Itoa(int(dt.UnixMilli())) },
+			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(int(dt.UnixMilli())) },
 		},
 		"y": {
 			Desc:   "Year number - '1999', '2007'",
-			expand: func(dt time.Time) string { return strconv.Itoa(dt.Year()) },
+			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Year()) },
 		},
 		"yy": {
 			Desc:    "Year number truncated to last two digits - '99', '07'",
-			expand:  func(dt time.Time) string { return strconv.Itoa(dt.Year() % 100) },
+			expand:  func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Year() % 100) },
 			aliases: []string{"ii"},
 		},
 		"yyyy": {
 			Desc:    "Year number zero padded to four digits - '1999', '0007'",
-			expand:  func(dt time.Time) string { return fmt.Sprintf("%04d", dt.Year()) },
+			expand:  func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%04d", dt.Year()) },
 			aliases: []string{"iiii"},
 		},
 		"z": {
-			Desc:   "IANA canonical time zone string - 'Europe/London'",
-			expand: func(dt time.Time) string { return dt.Location().String() },
+			Desc: "IANA canonical time zone string - 'Europe/London'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return dt.Location().String()
+			},
 		},
 		"Z": {
 			Desc: "Time zone offset shortened to one digit - '+5', '-3'",
-			expand: func(dt time.Time) string {
+			expand: func(dt time.Time, locale locales.Translator) string {
 				_, offsetSeconds := dt.Zone()
 				offsetHours := offsetSeconds / (60 * 60)
 				if offsetHours < 0 {
@@ -234,7 +311,7 @@ var Luxon = DateFormatterNoPrefix{
 		},
 		"ZZ": {
 			Desc: "Time zone offset - '+05:30', '-03:00'",
-			expand: func(dt time.Time) string {
+			expand: func(dt time.Time, locale locales.Translator) string {
 				_, offsetSeconds := dt.Zone()
 				offsetMinutes := offsetSeconds / 60
 				offsetHours := offsetMinutes / 60
@@ -247,7 +324,7 @@ var Luxon = DateFormatterNoPrefix{
 		},
 		"ZZZ": {
 			Desc: "Time zone offset formatted without the dividing ':' - '+0530', '-0300'",
-			expand: func(dt time.Time) string {
+			expand: func(dt time.Time, locale locales.Translator) string {
 				_, offsetSeconds := dt.Zone()
 				offsetMinutes := offsetSeconds / 60
 				offsetHours := offsetMinutes / 60
@@ -260,7 +337,7 @@ var Luxon = DateFormatterNoPrefix{
 		},
 		"ZZZZ": {
 			Desc: "Abbreviated time zone offset - 'GMT', 'CEST', '+0530'",
-			expand: func(dt time.Time) string {
+			expand: func(dt time.Time, locale locales.Translator) string {
 				offsetName, _ := dt.Zone()
 				return offsetName
 			},

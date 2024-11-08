@@ -7,6 +7,7 @@ import (
 	"time"
 	_ "time/tzdata"
 
+	"github.com/go-playground/locales/en_GB"
 	"github.com/spf13/cobra"
 )
 
@@ -27,6 +28,7 @@ var parseCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		location := time.Now().Local().Location()
+		locale := en_GB.New()
 
 		if TimeZone != "" {
 			loc, err := time.LoadLocation(TimeZone)
@@ -71,7 +73,7 @@ var parseCmd = &cobra.Command{
 			parseStr = args[0]
 		}
 
-		formattedTime, err := FormatTime(dt, Format, parseStr)
+		formattedTime, err := FormatTime(dt, locale, Format, parseStr)
 		if err != nil {
 			return err
 		}

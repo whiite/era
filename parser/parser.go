@@ -5,13 +5,15 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-playground/locales"
 )
 
 type FormatToken[T any] struct {
 	// Description of what the token represents
 	Desc string
 	// Equivalent string for token given a `time.Time`
-	expand  func(dt time.Time) string
+	expand  func(dt time.Time, locale locales.Translator) string
 	aliases []T
 }
 
@@ -24,7 +26,7 @@ type DateFormatterPrefix struct {
 	TokenMap map[rune]FormatToken[rune]
 }
 
-func (formatter DateFormatterPrefix) Parse(dt time.Time, str *string) string {
+func (formatter DateFormatterPrefix) Parse(dt time.Time, locale locales.Translator, str *string) string {
 	var formattedDate strings.Builder
 	interpretToken := false
 
@@ -38,7 +40,7 @@ func (formatter DateFormatterPrefix) Parse(dt time.Time, str *string) string {
 		}
 
 		if token, hasToken := formatter.TokenMap[char]; interpretToken && hasToken {
-			formattedDate.WriteString(token.expand(dt))
+			formattedDate.WriteString(token.expand(dt, locale))
 			interpretToken = false
 			continue
 		}
@@ -63,7 +65,7 @@ type DateFormatterNoPrefix struct {
 	TokenMap    map[string]FormatToken[string]
 }
 
-func (formatter DateFormatterNoPrefix) Parse(dt time.Time, str *string) string {
+func (formatter DateFormatterNoPrefix) Parse(dt time.Time, locale locales.Translator, str *string) string {
 	var formattedDate strings.Builder
 	var tokens strings.Builder
 
@@ -97,7 +99,7 @@ func (formatter DateFormatterNoPrefix) Parse(dt time.Time, str *string) string {
 		}
 
 		if formatFunc := tokenNode.value.expand; formatFunc != nil {
-			formattedDate.WriteString(formatFunc(dt))
+			formattedDate.WriteString(formatFunc(dt, locale))
 		} else {
 			formattedDate.WriteString(tokens.String())
 		}
@@ -111,7 +113,7 @@ func (formatter DateFormatterNoPrefix) Parse(dt time.Time, str *string) string {
 	}
 
 	if formatFunc := tokenNode.value.expand; formatFunc != nil {
-		formattedDate.WriteString(formatFunc(dt))
+		formattedDate.WriteString(formatFunc(dt, locale))
 	} else {
 		formattedDate.WriteString(tokens.String())
 	}

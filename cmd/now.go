@@ -8,6 +8,9 @@ import (
 	"time"
 	_ "time/tzdata"
 
+	"github.com/go-playground/locales"
+	"github.com/go-playground/locales/en_GB"
+
 	"github.com/spf13/cobra"
 )
 
@@ -29,6 +32,7 @@ var nowCmd = &cobra.Command{
 	Long:  "Convert, format and print the current time ",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		now := time.Now()
+		locale := en_GB.New()
 
 		if TimeZone != "" {
 			location, err := time.LoadLocation(TimeZone)
@@ -43,7 +47,7 @@ var nowCmd = &cobra.Command{
 			parseStr = args[0]
 		}
 
-		nowFormatted, err := FormatTime(now, Format, parseStr)
+		nowFormatted, err := FormatTime(now, locale, Format, parseStr)
 		if err != nil {
 			return err
 		}
@@ -53,7 +57,7 @@ var nowCmd = &cobra.Command{
 	},
 }
 
-func FormatTime(dt time.Time, format string, parseStr string) (string, error) {
+func FormatTime(dt time.Time, locale locales.Translator, format string, parseStr string) (string, error) {
 	formattedTime := ""
 
 	switch strings.ToLower(format) {
@@ -69,17 +73,17 @@ func FormatTime(dt time.Time, format string, parseStr string) (string, error) {
 		if len(parseStr) == 0 {
 			return formattedTime, fmt.Errorf("No format string provided")
 		}
-		formattedTime = parser.MomentJs.Parse(dt, &parseStr)
+		formattedTime = parser.MomentJs.Parse(dt, locale, &parseStr)
 	case "luxon":
 		if len(parseStr) == 0 {
 			return formattedTime, fmt.Errorf("No format string provided")
 		}
-		formattedTime = parser.Luxon.Parse(dt, &parseStr)
+		formattedTime = parser.Luxon.Parse(dt, locale, &parseStr)
 	case "strptime":
 		if len(parseStr) == 0 {
 			return formattedTime, fmt.Errorf("No format string provided")
 		}
-		formattedTime = parser.Strptime.Parse(dt, &parseStr)
+		formattedTime = parser.Strptime.Parse(dt, locale, &parseStr)
 	default:
 		return formattedTime, fmt.Errorf("'%s' is not a supported format", parseStr)
 	}
