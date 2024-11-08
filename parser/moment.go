@@ -25,12 +25,16 @@ var MomentJs = DateFormatterNoPrefix{
 			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Month()) },
 		},
 		"MMM": {
-			Desc:   "Month name truncated to three characters - 'Jan', 'Feb'",
-			expand: func(dt time.Time, locale locales.Translator) string { return dt.Month().String()[:3] },
+			Desc: "Month name truncated to three characters - 'Jan', 'Feb'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.MonthWide(dt.Month())[:3]
+			},
 		},
 		"MMMM": {
-			Desc:   "Month name - 'January', 'February'",
-			expand: func(dt time.Time, locale locales.Translator) string { return dt.Month().String() },
+			Desc: "Month name - 'January', 'February'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.MonthWide(dt.Month())
+			},
 		},
 		"Q": {
 			Desc:   "Quarter of year (1-4)",
@@ -73,16 +77,22 @@ var MomentJs = DateFormatterNoPrefix{
 			expand: func(dt time.Time, locale locales.Translator) string { return numberSuffixed(int(dt.Weekday())) },
 		},
 		"dd": {
-			Desc:   "Day of week name truncated to two characters - 'Su', 'Mo'",
-			expand: func(dt time.Time, locale locales.Translator) string { return dt.Weekday().String()[:2] },
+			Desc: "Day of week name truncated to two characters - 'Su', 'Mo'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.WeekdayShort(dt.Weekday())
+			},
 		},
 		"ddd": {
-			Desc:   "Day of week name truncated to three characters - 'Sun', 'Mon'",
-			expand: func(dt time.Time, locale locales.Translator) string { return dt.Weekday().String()[:3] },
+			Desc: "Day of week name truncated to three characters - 'Sun', 'Mon'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.WeekdayWide(dt.Weekday())[:3]
+			},
 		},
 		"dddd": {
-			Desc:   "Day of week name - 'Sunday', 'Monday'",
-			expand: func(dt time.Time, locale locales.Translator) string { return dt.Weekday().String() },
+			Desc: "Day of week name - 'Sunday', 'Monday'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.WeekdayWide(dt.Weekday())
+			},
 		},
 		"H": {
 			Desc:   "Hour in 24 hour format (0-23)",
