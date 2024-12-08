@@ -56,6 +56,13 @@ func (formatter DateFormatterPrefix) TokenDesc() string {
 	var output strings.Builder
 	for tokenChar, tokenDef := range formatter.TokenMap {
 		output.WriteString(fmt.Sprintf("%c%c: %s\n", formatter.Prefix, tokenChar, tokenDef.Desc))
+		if len(tokenDef.aliases) > 0 {
+			output.WriteString("  aliases:")
+			for _, alias := range tokenDef.aliases {
+				output.WriteString(fmt.Sprintf(" %c", alias))
+			}
+			output.WriteString("\n")
+		}
 	}
 	return output.String()
 }
@@ -125,6 +132,14 @@ func (formatter DateFormatterNoPrefix) TokenDesc() string {
 	var output strings.Builder
 	for tokenStr, tokenDef := range formatter.TokenMap {
 		output.WriteString(fmt.Sprintf("%s: %s\n", tokenStr, tokenDef.Desc))
+		if len(tokenDef.aliases) > 0 {
+			output.WriteString("  aliases:")
+			for _, alias := range tokenDef.aliases {
+				output.WriteString(fmt.Sprintf(" %s", alias))
+			}
+			output.WriteString("\n")
+		}
+
 	}
 	return output.String()
 }

@@ -29,12 +29,9 @@ var Strptime = DateFormatterPrefix{
 			expand: func(dt time.Time, locale locales.Translator) string { return dt.Month().String() },
 		},
 		'b': {
-			Desc:   "Month month name truncated to three characters - 'Jan', 'Feb'",
-			expand: func(dt time.Time, locale locales.Translator) string { return dt.Month().String()[:3] },
-		},
-		'h': {
-			Desc:   "Month name truncated to three characters - 'Jan', 'Feb'",
-			expand: func(dt time.Time, locale locales.Translator) string { return dt.Month().String()[:3] },
+			Desc:    "Month month name truncated to three characters - 'Jan', 'Feb'",
+			expand:  func(dt time.Time, locale locales.Translator) string { return dt.Month().String()[:3] },
+			aliases: []rune{'h'},
 		},
 		'c': {
 			Desc:   "Date and time for the current locale (different to strptime and hardcoded to UK format currently)",
