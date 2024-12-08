@@ -34,7 +34,7 @@ var Strptime = DateFormatterPrefix{
 			aliases: []rune{'h'},
 		},
 		'c': {
-			Desc:   "Date and time for the current locale (different to strptime and hardcoded to UK format currently)",
+			Desc:   "Date and time for the current locale (hardcoded to UK format currently)",
 			expand: func(dt time.Time, locale locales.Translator) string { return dt.Format("Mon _2 Jan 15:04:05 2006") },
 		},
 		'C': {
@@ -47,7 +47,7 @@ var Strptime = DateFormatterPrefix{
 		},
 		'e': {
 			Desc:   "Day of month (1-31)",
-			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Day()) },
+			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("% 2d", dt.Day()) },
 		},
 		'D': {
 			Desc: "American style date (month first) equivalent to '%m/%d/%y' where the year is truncated to the last two digits - '01/31/97', '02/28/01'",
@@ -78,6 +78,26 @@ var Strptime = DateFormatterPrefix{
 		'n': {
 			Desc:   "Newline whitespace - '\\n'",
 			expand: func(dt time.Time, locale locales.Translator) string { return "\n" },
+		},
+		'p': {
+			Desc: "The locale's equivalent of AM or PM (hardcoded to English am/pm)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				// TODO: locale
+				if dt.Hour() < 12 {
+					return "am"
+				}
+				return "pm"
+			},
+		},
+		'r': {
+			Desc: "12 hour time represented as hours, minutes, seconds and am/pm equivalent to \"%I:%M:%S %p\" (hardcoded to English am/pm) - '11:24:52 pm', '04:09:20 am'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				ampm := "pm"
+				if dt.Hour() < 12 {
+					ampm = "am"
+				}
+				return fmt.Sprintf("%02d:%02d:%02d %s", dt.Hour()%12, dt.Minute(), dt.Second(), ampm)
+			},
 		},
 		'R': {
 			Desc: "Time represented as hours and minutes equivalent to %H:%M - '12:24', '04:09'",
@@ -119,9 +139,18 @@ var Strptime = DateFormatterPrefix{
 				return fmt.Sprintf("%02d", week)
 			},
 		},
-		// NOTE: haven't found a locale aware version of these:
-		// 'x': func(dt time.Time, locale locales.Translator) string { return dt.Format("01/02/06") },
-		// 'X': func(dt time.Time, locale locales.Translator) string { return dt.Format(time.TimeOnly) },
+		'x': {
+			Desc: "Locale date format - '04/12/1999', '11/02/2007'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.FmtDateShort(dt)
+			},
+		},
+		'X': {
+			Desc: "Locale time including seconds - '03:57:22', '18:08:01'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.FmtTimeMedium(dt)
+			},
+		},
 		'y': {
 			Desc:   "The year within the century zero padded to two digits (00-99)",
 			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Year()%100) },
