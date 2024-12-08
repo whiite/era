@@ -11,7 +11,7 @@ import (
 // Formats time according to the momentjs tokens
 var MomentJs = DateFormatterNoPrefix{
 	escapeChars: []rune{'[', ']'},
-	TokenMap: map[string]FormatToken[string]{
+	tokenMap: map[string]FormatToken[string]{
 		"M": {
 			Desc:   "Month number (1-12)",
 			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(int(dt.Month())) },

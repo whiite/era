@@ -11,7 +11,7 @@ import (
 // Formats date strings via the same system as `strptime`
 var Strptime = DateFormatterPrefix{
 	Prefix: '%',
-	TokenMap: map[rune]FormatToken[rune]{
+	tokenMap: map[rune]FormatToken[rune]{
 		'%': {
 			Desc:   "'%' character literal",
 			expand: func(dt time.Time, locale locales.Translator) string { return "%" },

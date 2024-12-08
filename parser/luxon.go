@@ -10,7 +10,7 @@ import (
 // Formats date strings via the same system as `strptime`
 var Luxon = DateFormatterNoPrefix{
 	escapeChars: []rune{'\''},
-	TokenMap: map[string]FormatToken[string]{
+	tokenMap: map[string]FormatToken[string]{
 		"a": {
 			Desc: "Meridiem - 'AM'",
 			expand: func(dt time.Time, locale locales.Translator) string {
@@ -20,7 +20,6 @@ var Luxon = DateFormatterNoPrefix{
 				}
 				return "PM"
 			},
-			aliases: []string{"L"},
 		},
 		"c": {
 			Desc: "Day of week where Monday = 1 and Sunday = 7 (1-7)",
