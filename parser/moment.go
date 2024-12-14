@@ -107,16 +107,28 @@ var MomentJs = DateFormatterNoPrefix{
 			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Hour() % 12) },
 		},
 		"hh": {
-			Desc:   "Hour in 12 hour format zero padded to two digits (01-12)",
-			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Hour()%12) },
+			Desc: "Hour in 12 hour format zero padded to two digits (01-12)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				hour := dt.Hour() % 12
+				if hour == 0 {
+					hour = 12
+				}
+				return fmt.Sprintf("%02d", hour)
+			},
 		},
 		"k": {
 			Desc:   "Hour in 24 hour format starting from 1 (1-24)",
 			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Hour()) },
 		},
 		"kk": {
-			Desc:   "Hour in 24 hour format starting from 1 zero padded to two digits (01-24)",
-			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Hour()) },
+			Desc: "Hour in 24 hour format starting from 1 zero padded to two digits (01-24)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				hour := dt.Hour()
+				if hour == 0 {
+					hour = 24
+				}
+				return fmt.Sprintf("%02d", hour)
+			},
 		},
 		"Y": {
 			Desc:   "Year number - '1999', '2007'",

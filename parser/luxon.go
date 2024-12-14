@@ -124,8 +124,14 @@ var Luxon = DateFormatterNoPrefix{
 			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Hour() % 12) },
 		},
 		"hh": {
-			Desc:   "Hour in 12 hour format zero padded to two digits (01-12)",
-			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Hour()%12) },
+			Desc: "Hour in 12 hour format zero padded to two digits (01-12)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				hour := dt.Hour() % 12
+				if hour == 0 {
+					hour = 12
+				}
+				return fmt.Sprintf("%02d", hour)
+			},
 		},
 		"kk": {
 			Desc: "ISO week year shortened to the last two digits - '99, '07'",
