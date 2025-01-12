@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"monokuro/era/localiser"
 	"monokuro/era/parser"
 	"strconv"
 	"strings"
@@ -20,9 +21,13 @@ var Format string
 // Canonical time zone string flag to convert the time to before displaying
 var TimeZone string
 
+// Locale string to use when formatting date times
+var Locale string
+
 func init() {
 	nowCmd.Flags().StringVarP(&Format, "formatter", "F", "", "Formatter to interpret and display the current datetime with")
 	nowCmd.Flags().StringVarP(&TimeZone, "timezone", "t", "", "Time zone to set the time to")
+	nowCmd.Flags().StringVarP(&Locale, "Locale", "l", "", "Locale to use in formatting")
 	rootCmd.AddCommand(nowCmd)
 }
 
@@ -40,6 +45,14 @@ var nowCmd = &cobra.Command{
 				return err
 			}
 			now = now.In(location)
+		}
+
+		if Locale != "" {
+			parsedLocale, err := localiser.Parse(Locale)
+			if err != nil {
+				return err
+			}
+			locale = parsedLocale
 		}
 
 		parseStr := ""
