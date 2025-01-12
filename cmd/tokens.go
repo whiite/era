@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	tokensCmd.Flags().StringVarP(&Parser, "parser", "p", "", "Parser to interpret supplied time wFormat to display the datetime withith")
+	tokensCmd.Flags().StringVarP(&Parser, "formatter", "F", "", "Formatter to display supported tokens")
 	rootCmd.AddCommand(tokensCmd)
 }
 
