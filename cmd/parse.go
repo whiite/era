@@ -16,7 +16,7 @@ var Parser string
 
 func init() {
 	parseCmd.Flags().StringVarP(&Format, "format", "f", "", "Format to display the datetime with")
-	parseCmd.Flags().StringVarP(&Parser, "parser", "p", "", "Parser to interpret supplied time wFormat to display the datetime with")
+	parseCmd.Flags().StringVarP(&Parser, "formatter", "F", "", "Formatter to interpret and display the supplied datetime with")
 	parseCmd.Flags().StringVarP(&TimeZone, "timezone", "t", "", "Time zone to set the time to")
 	rootCmd.AddCommand(parseCmd)
 }

@@ -21,7 +21,7 @@ var Format string
 var TimeZone string
 
 func init() {
-	nowCmd.Flags().StringVarP(&Format, "format", "f", "", "Format to display the datetime with")
+	nowCmd.Flags().StringVarP(&Format, "formatter", "F", "", "Formatter to interpret and display the current datetime with")
 	nowCmd.Flags().StringVarP(&TimeZone, "timezone", "t", "", "Time zone to set the time to")
 	rootCmd.AddCommand(nowCmd)
 }
