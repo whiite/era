@@ -8,9 +8,10 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "era",
-	Short: "Simple utility for working with time and dates",
-	Long:  `A simple and intuitve tool for working with and manipulating time and dates`,
+	Use:     "era",
+	Version: "0.1",
+	Short:   "Simple utility for working with time and dates",
+	Long:    `A simple and intuitve tool for working with and manipulating time and dates`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
