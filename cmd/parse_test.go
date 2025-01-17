@@ -40,19 +40,21 @@ func compareFormat(ctx compareCtx, t *testing.T) {
 	}
 	want := execDate(ctx.format, ctx.dt, t)
 	if got != want {
-		t.Errorf(`Formatter: '%s' did not match for format '%s'
-	got:    '%s'
-	wanted: '%s'`, ctx.formatter, ctx.format, got, want)
+		t.Errorf(`Formatter: '%s' did not match for format string: '%s'
+got:    '%s'
+wanted: '%s'`, ctx.formatter, ctx.format, got, want)
 	}
 }
 
 func TestTokensStrptime(t *testing.T) {
 	tokens := parser.Strptime.TokenMapExpanded()
+	const shortForm = "2006-Jan-02"
+	dt, _ := time.Parse(shortForm, "2024-Jan-07")
 
 	for token := range tokens {
 		format := fmt.Sprintf("%%%c", token)
 		compareFormat(compareCtx{
-			dt:        time.Now(),
+			dt:        dt,
 			locale:    en_GB.New(),
 			formatter: "strptime",
 			format:    format,
