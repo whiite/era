@@ -70,10 +70,10 @@ var nowCmd = &cobra.Command{
 	},
 }
 
-func FormatTime(dt time.Time, locale locales.Translator, format string, parseStr string) (string, error) {
+func FormatTime(dt time.Time, locale locales.Translator, formatter string, parseStr string) (string, error) {
 	formattedTime := ""
 
-	switch strings.ToLower(format) {
+	switch strings.ToLower(formatter) {
 	case "unix", "timestamp", "ts":
 		formattedTime = strconv.FormatInt(dt.Unix(), 10)
 	case "rfc", "rfc3339":
