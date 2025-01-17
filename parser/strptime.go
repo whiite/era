@@ -132,10 +132,6 @@ var Strptime = DateFormatterPrefix{
 			Desc:   "Newline whitespace - '\\n'",
 			expand: func(dt time.Time, locale locales.Translator) string { return "\n" },
 		},
-		'N': {
-			Desc:   "Nanoseconds zero padded to nine digits (000000000-999999999)",
-			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Nanosecond()) },
-		},
 		'p': {
 			Desc: "The locale's equivalent of AM or PM (hardcoded to English am/pm)",
 			expand: func(dt time.Time, locale locales.Translator) string {
