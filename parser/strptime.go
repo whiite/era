@@ -46,8 +46,14 @@ var Strptime = DateFormatterPrefix{
 			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Day()) },
 		},
 		'e': {
-			Desc:   "Day of month (1-31)",
-			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("% 2d", dt.Day()) },
+			Desc: "Day of month space padded to two characters ( 1-31)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				fmtstr := "%d"
+				if dt.Day() < 10 {
+					fmtstr = " %d"
+				}
+				return fmt.Sprintf(fmtstr, dt.Day())
+			},
 		},
 		'F': {
 			Desc:   "Date in year-month-day format equivalent to '%Y-%m-%d' - '2024-01-04', '1997-10-31'",
@@ -178,7 +184,7 @@ var Strptime = DateFormatterPrefix{
 		'u': {
 			Desc: "Day of week where Monday = 1 and Sunday = 7 (1-7)",
 			expand: func(dt time.Time, locale locales.Translator) string {
-				return strconv.Itoa((7+int(dt.Weekday()))%7 + 1)
+				return strconv.Itoa((int(dt.Weekday())+6)%7 + 1)
 			},
 		},
 		// TODO: implement same rules as strptime - first week is the first Sunday of January
