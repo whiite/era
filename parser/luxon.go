@@ -24,7 +24,7 @@ var Luxon = DateFormatterNoPrefix{
 		"c": {
 			Desc: "Day of week where Monday = 1 and Sunday = 7 (1-7)",
 			expand: func(dt time.Time, locale locales.Translator) string {
-				return strconv.Itoa((7+int(dt.Weekday()))%7 + 1)
+				return strconv.Itoa((int(dt.Weekday())+6)%7 + 1)
 			},
 			aliases: []string{"E"},
 		},
