@@ -2,6 +2,8 @@ package parser
 
 import (
 	"fmt"
+	"maps"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -65,7 +67,8 @@ func (formatter DateFormatterPrefix) TokenMapExpanded() map[rune]FormatToken[run
 
 func (formatter DateFormatterPrefix) TokenDesc() string {
 	var output strings.Builder
-	for tokenChar, tokenDef := range formatter.tokenMap {
+	for _, tokenChar := range slices.Sorted(maps.Keys(formatter.tokenMap)) {
+		tokenDef := formatter.tokenMap[tokenChar]
 		output.WriteString(fmt.Sprintf("%c%c: %s\n", formatter.Prefix, tokenChar, tokenDef.Desc))
 		if len(tokenDef.aliases) > 0 {
 			output.WriteString("  aliases:")
@@ -155,7 +158,8 @@ func (formatter DateFormatterNoPrefix) TokenMapExpanded() map[string]FormatToken
 
 func (formatter DateFormatterNoPrefix) TokenDesc() string {
 	var output strings.Builder
-	for tokenStr, tokenDef := range formatter.tokenMap {
+	for _, tokenStr := range slices.Sorted(maps.Keys(formatter.tokenMap)) {
+		tokenDef := formatter.tokenMap[tokenStr]
 		output.WriteString(fmt.Sprintf("%s: %s\n", tokenStr, tokenDef.Desc))
 		if len(tokenDef.aliases) > 0 {
 			output.WriteString("  aliases:")
