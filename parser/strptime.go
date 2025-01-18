@@ -56,8 +56,10 @@ var Strptime = DateFormatterPrefix{
 			},
 		},
 		'F': {
-			Desc:   "Date in year-month-day format equivalent to '%Y-%m-%d' - '2024-01-04', '1997-10-31'",
-			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("% 2d", dt.Day()) },
+			Desc: "Date in year-month-day format equivalent to '%Y-%m-%d' - '2024-01-04', '1997-10-31'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%d-%02d-%02d", dt.Year(), dt.Month(), dt.Day())
+			},
 		},
 		'g': {
 			Desc: "ISO week year shortened to the last two digits (00-99) ",
