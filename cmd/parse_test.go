@@ -41,9 +41,11 @@ func compareFormat(ctx compareCtx, t *testing.T) {
 	}
 	want := execDate(ctx.format, ctx.dt, t)
 	if got != want {
-		t.Errorf(`Formatter: '%s' did not match for format string: '%s'
+		t.Errorf(`Formatter: '%s' did not match format string: '%s'
+location: '%s'
+
 got:    '%s'
-wanted: '%s'`, ctx.formatter, ctx.format, got, want)
+wanted: '%s'`, ctx.formatter, ctx.format, ctx.dt.Location().String(), got, want)
 	}
 }
 
@@ -52,14 +54,22 @@ func TestTokensStrptime(t *testing.T) {
 	const shortForm = "2006-Jan-02"
 	dt, _ := time.Parse(shortForm, "2024-Jan-07")
 
-	for token := range tokens {
-		format := fmt.Sprintf("%%%c", token)
-		compareFormat(compareCtx{
-			dt:        dt,
-			locale:    en_GB.New(),
-			formatter: "strptime",
-			format:    format,
-		}, t)
+	for _, loc := range []string{"America/Los_Angeles", "Europe/London"} {
+		loc, err := time.LoadLocation(loc)
+		if err != nil {
+			t.Errorf("Location '%s' is unsupported: %s", loc, err)
+			break
+		}
+
+		for token := range tokens {
+			format := fmt.Sprintf("%%%c", token)
+			compareFormat(compareCtx{
+				dt:        dt.In(loc),
+				locale:    en_GB.New(),
+				formatter: "strptime",
+				format:    format,
+			}, t)
+		}
 	}
 
 }
