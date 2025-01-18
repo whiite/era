@@ -29,26 +29,23 @@ type DateFormatterPrefix struct {
 
 func (formatter DateFormatterPrefix) Parse(dt time.Time, locale locales.Translator, str *string) string {
 	var formattedDate strings.Builder
-	interpretToken := false
+	interpretMode := false
 
 	tokenMap := formatter.TokenMapExpanded()
 	for _, char := range *str {
-		if char == formatter.Prefix {
-			if interpretToken {
-				formattedDate.WriteRune(formatter.Prefix)
-			}
-			interpretToken = true
+		if char == formatter.Prefix && !interpretMode {
+			interpretMode = true
 			continue
 		}
 
-		if token, hasToken := tokenMap[char]; interpretToken && hasToken {
+		if token, hasToken := tokenMap[char]; interpretMode && hasToken {
 			formattedDate.WriteString(token.expand(dt, locale))
-			interpretToken = false
+			interpretMode = false
 			continue
 		}
 
 		formattedDate.WriteRune(char)
-		interpretToken = false
+		interpretMode = false
 	}
 
 	return formattedDate.String()
