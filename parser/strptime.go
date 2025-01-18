@@ -165,6 +165,10 @@ var Strptime = DateFormatterPrefix{
 				return fmt.Sprintf("%02d:%02d", dt.Hour(), dt.Minute())
 			},
 		},
+		's': {
+			Desc:   "Seconds since the unix epoch 1970-01-01 00:00:00 +0000 (UTC)",
+			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%d", dt.Unix()) },
+		},
 		'S': {
 			Desc:   "Seconds zero padded to two digits (00-60; 60 may occur for for leap seconds)",
 			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Second()) },
