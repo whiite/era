@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"monokuro/era/dateutils"
 	"strconv"
 	"time"
 
@@ -192,11 +193,10 @@ var Strptime = DateFormatterPrefix{
 		'U': {
 			Desc: "Week number of the year where the first Sunday of January is considered week 1 - (00-53)",
 			expand: func(dt time.Time, locale locales.Translator) string {
-				midnight := time.Date(dt.Year(), dt.Month(), dt.Day(), 0, 0, 0, 0, dt.Location())
-				jan1st := time.Date(dt.Year(), 1, 1, 0, 0, 0, 0, dt.Location())
+				midnight := dateutils.DayStart(dt)
+				jan1st := dateutils.YearStart(midnight)
 
-				daysUntilSunday := (7 - jan1st.Weekday()) % 7
-				firstSundayJan := time.Date(jan1st.Year(), jan1st.Month(), int(jan1st.Weekday()+daysUntilSunday), 0, 0, 0, 0, jan1st.Location())
+				firstSundayJan := dateutils.NextWeekday(time.Sunday, jan1st)
 				weekDiff := int((midnight.Sub(firstSundayJan).Hours() / 24 / 7) + 1)
 				return fmt.Sprintf("%02d", weekDiff)
 			},
@@ -215,11 +215,10 @@ var Strptime = DateFormatterPrefix{
 		'W': {
 			Desc: "Week number of the year where the first Monday of January is considered week 1 - (00-53)",
 			expand: func(dt time.Time, locale locales.Translator) string {
-				midnight := time.Date(dt.Year(), dt.Month(), dt.Day(), 0, 0, 0, 0, dt.Location())
-				jan1st := time.Date(dt.Year(), 1, 1, 0, 0, 0, 0, dt.Location())
+				midnight := dateutils.DayStart(dt)
+				jan1st := dateutils.YearStart(midnight)
 
-				daysUntilMonday := (7 - jan1st.Weekday() + 1) % 7
-				firstSundayJan := time.Date(jan1st.Year(), jan1st.Month(), int(jan1st.Weekday()+daysUntilMonday), 0, 0, 0, 0, jan1st.Location())
+				firstSundayJan := dateutils.NextWeekday(time.Monday, jan1st)
 				weekDiff := int((midnight.Sub(firstSundayJan).Hours() / 24 / 7) + 1)
 				return fmt.Sprintf("%02d", weekDiff)
 			},

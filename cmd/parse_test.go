@@ -43,33 +43,54 @@ func compareFormat(ctx compareCtx, t *testing.T) {
 	if got != want {
 		t.Errorf(`Formatter: '%s' did not match format string: '%s'
 location: '%s'
+date:     '%s' | %d
 
 got:    '%s'
-wanted: '%s'`, ctx.formatter, ctx.format, ctx.dt.Location().String(), got, want)
+wanted: '%s'`, ctx.formatter, ctx.format, ctx.dt.Location().String(), ctx.dt.String(), ctx.dt.Unix(), got, want)
 	}
 }
 
 func TestTokensStrptime(t *testing.T) {
 	tokens := parser.Strptime.TokenMapExpanded()
-	const shortForm = "2006-Jan-02"
-	dt, _ := time.Parse(shortForm, "2024-Jan-07")
 
-	for _, loc := range []string{"America/Los_Angeles", "Europe/London"} {
-		loc, err := time.LoadLocation(loc)
-		if err != nil {
-			t.Errorf("Location '%s' is unsupported: %s", loc, err)
-			break
-		}
+	for _, datestr := range []string{"2024-01-07", "1997-01-04", "1989-12-31"} {
+		dt, _ := time.Parse(time.DateOnly, datestr)
+		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
+			loc, err := time.LoadLocation(loc)
+			if err != nil {
+				t.Errorf("Location '%s' is unsupported: %s", loc, err)
+				break
+			}
 
-		for token := range tokens {
-			format := fmt.Sprintf("%%%c", token)
-			compareFormat(compareCtx{
-				dt:        dt.In(loc),
-				locale:    en_GB.New(),
-				formatter: "strptime",
-				format:    format,
-			}, t)
+			for token := range tokens {
+				format := fmt.Sprintf("%%%c", token)
+				compareFormat(compareCtx{
+					dt:        dt.In(loc),
+					locale:    en_GB.New(),
+					formatter: "strptime",
+					format:    format,
+				}, t)
+			}
 		}
 	}
 
 }
+
+// func TestSpecific(t *testing.T) {
+// 	dt, _ := time.Parse(time.DateOnly, "1997-01-04")
+//
+// 	loc, err := time.LoadLocation("America/Los_Angeles")
+// 	// loc, err := time.LoadLocation("Europe/London")
+// 	if err != nil {
+// 		t.Errorf("Location '%s' is unsupported: %s", loc, err)
+// 		return
+// 	}
+//
+// 	compareFormat(compareCtx{
+// 		dt:        dt.In(loc),
+// 		locale:    en_GB.New(),
+// 		formatter: "strptime",
+// 		format:    "%W",
+// 	}, t)
+//
+// }
