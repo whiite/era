@@ -49,9 +49,9 @@ var Strptime = DateFormatterPrefix{
 		'e': {
 			Desc: "Day of month space padded to two characters ( 1-31)",
 			expand: func(dt time.Time, locale locales.Translator) string {
-				fmtstr := "%d"
-				if dt.Day() < 10 {
-					fmtstr = " %d"
+				fmtstr := " %d"
+				if dt.Day() > 9 {
+					fmtstr = fmtstr[1:]
 				}
 				return fmt.Sprintf(fmtstr, dt.Day())
 			},
@@ -202,7 +202,7 @@ var Strptime = DateFormatterPrefix{
 			},
 		},
 		'v': {
-			Desc: "Date formatted",
+			Desc: "Date with space padded day; truncated month name and year equivalent to %d-%b-%Y - ' 4-Jan-1997'",
 			expand: func(dt time.Time, locale locales.Translator) string {
 				day := dt.Day()
 				formatStr := " %d-%s-%d"
