@@ -189,12 +189,16 @@ var Strptime = DateFormatterPrefix{
 				return strconv.Itoa((int(dt.Weekday())+6)%7 + 1)
 			},
 		},
-		// TODO: implement same rules as strptime - first week is the first Sunday of January
 		'U': {
-			Desc: "ISO8601 week number of the year (this is different to the typical strptime token currently)",
+			Desc: "Week number of the year where the first Sunday of January is considered week 1 - (00-53)",
 			expand: func(dt time.Time, locale locales.Translator) string {
-				_, weekNumber := dt.ISOWeek()
-				return fmt.Sprintf("%02d", weekNumber)
+				midnight := time.Date(dt.Year(), dt.Month(), dt.Day(), 0, 0, 0, 0, dt.Location())
+				jan1st := time.Date(dt.Year(), 1, 1, 0, 0, 0, 0, dt.Location())
+
+				daysUntilSunday := (7 - jan1st.Weekday()) % 7
+				firstSundayJan := time.Date(jan1st.Year(), jan1st.Month(), int(jan1st.Weekday()+daysUntilSunday), 0, 0, 0, 0, jan1st.Location())
+				weekDiff := int((midnight.Sub(firstSundayJan).Hours() / 24 / 7) + 1)
+				return fmt.Sprintf("%02d", weekDiff)
 			},
 		},
 		'V': {
@@ -208,12 +212,16 @@ var Strptime = DateFormatterPrefix{
 			Desc:   "Day of week number (0-6) where Sunday is 0 and Saturday is 6",
 			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(int(dt.Weekday())) },
 		},
-		// TODO: implement same rules as strptime - first week is the first Monday of January
 		'W': {
-			Desc: "ISO8601 week number of the year (this is different to the typical strptime token currently)",
+			Desc: "Week number of the year where the first Monday of January is considered week 1 - (00-53)",
 			expand: func(dt time.Time, locale locales.Translator) string {
-				_, week := dt.ISOWeek()
-				return fmt.Sprintf("%02d", week)
+				midnight := time.Date(dt.Year(), dt.Month(), dt.Day(), 0, 0, 0, 0, dt.Location())
+				jan1st := time.Date(dt.Year(), 1, 1, 0, 0, 0, 0, dt.Location())
+
+				daysUntilMonday := (7 - jan1st.Weekday() + 1) % 7
+				firstSundayJan := time.Date(jan1st.Year(), jan1st.Month(), int(jan1st.Weekday()+daysUntilMonday), 0, 0, 0, 0, jan1st.Location())
+				weekDiff := int((midnight.Sub(firstSundayJan).Hours() / 24 / 7) + 1)
+				return fmt.Sprintf("%02d", weekDiff)
 			},
 		},
 		'x': {
