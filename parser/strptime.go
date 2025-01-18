@@ -245,6 +245,8 @@ var Strptime = DateFormatterPrefix{
 				sign := '+'
 				if offsetHours < 0 {
 					sign = '-'
+					offsetHours *= -1
+					offsetMinutes *= -1
 				}
 				return fmt.Sprintf("%c%02d%02d", sign, offsetHours, offsetMinutes%60)
 
