@@ -76,6 +76,33 @@ func TestTokensStrptime(t *testing.T) {
 
 }
 
+func TestFormatStringsStrptime(t *testing.T) {
+	for _, datestr := range []string{"2024-01-07", "1997-01-04", "1989-12-31"} {
+		dt, _ := time.Parse(time.DateOnly, datestr)
+		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
+			loc, err := time.LoadLocation(loc)
+			if err != nil {
+				t.Errorf("Location '%s' is unsupported: %s", loc, err)
+				break
+			}
+
+			for _, formatstr := range []string{
+				"%toutput: %G%M%%%S%v",
+				"%%%%%%%S",
+				"% %V%% %t %t",
+			} {
+				compareFormat(compareCtx{
+					dt:        dt.In(loc),
+					locale:    en_GB.New(),
+					formatter: "strptime",
+					format:    formatstr,
+				}, t)
+			}
+		}
+	}
+
+}
+
 // func TestSpecific(t *testing.T) {
 // 	dt, _ := time.Parse(time.DateOnly, "1997-01-04")
 //
