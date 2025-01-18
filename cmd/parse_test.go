@@ -14,6 +14,7 @@ import (
 
 func execDate(format string, dt time.Time, t *testing.T) string {
 	cmd := exec.Command("date", "-r", fmt.Sprintf("%d", dt.Unix()), fmt.Sprintf("+%s", format))
+	cmd.Env = append(cmd.Environ(), fmt.Sprintf("TZ=%s", dt.Location().String()))
 	var out strings.Builder
 	cmd.Stdout = &out
 	err := cmd.Run()
