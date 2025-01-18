@@ -90,6 +90,7 @@ func TestFormatStringsStrptime(t *testing.T) {
 				"%toutput: %G%M%%%S%v",
 				"%%%%%%%S",
 				"% %V%% %t %t",
+				"%n%n%n",
 			} {
 				compareFormat(compareCtx{
 					dt:        dt.In(loc),
@@ -103,7 +104,7 @@ func TestFormatStringsStrptime(t *testing.T) {
 
 }
 
-// func TestSpecific(t *testing.T) {
+// func TestScenario(t *testing.T) {
 // 	dt, _ := time.Parse(time.DateOnly, "1997-01-04")
 //
 // 	loc, err := time.LoadLocation("America/Los_Angeles")
