@@ -201,6 +201,17 @@ var Strptime = DateFormatterPrefix{
 				return fmt.Sprintf("%02d", weekDiff)
 			},
 		},
+		'v': {
+			Desc: "Date formatted",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				day := dt.Day()
+				formatStr := " %d-%s-%d"
+				if day > 9 {
+					formatStr = formatStr[1:]
+				}
+				return fmt.Sprintf(formatStr, dt.Day(), locale.MonthWide(dt.Month())[:3], dt.Year())
+			},
+		},
 		'V': {
 			Desc: "ISO8601 week number of the year zero padded to two digits - (01-53)",
 			expand: func(dt time.Time, locale locales.Translator) string {
