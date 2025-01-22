@@ -2,9 +2,11 @@ package parser
 
 import (
 	"fmt"
-	"github.com/go-playground/locales"
+	"monokuro/era/dateutils"
 	"strconv"
 	"time"
+
+	"github.com/go-playground/locales"
 )
 
 // Formats date strings via the same system as `strptime`
@@ -195,13 +197,19 @@ var Luxon = DateFormatterNoPrefix{
 			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%03d", dt.YearDay()) },
 		},
 		"q": {
-			Desc:   "Quarter of year (1-4)",
-			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(time.Now().YearDay() % 4) },
+			Desc: "Quarter of year (1-4)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				daysInYear := float64(dateutils.YearEnd(dt).YearDay())
+				quarter := (float64(dt.YearDay()) / daysInYear) * 4
+				return strconv.Itoa(int(quarter) + 1)
+			},
 		},
 		"qq": {
 			Desc: "Quarter of year zero padded to two digits (01-04)",
 			expand: func(dt time.Time, locale locales.Translator) string {
-				return fmt.Sprintf("%02d", time.Now().YearDay()%4)
+				daysInYear := float64(dateutils.YearEnd(dt).YearDay())
+				quarter := (float64(dt.YearDay()) / daysInYear) * 4
+				return fmt.Sprintf("%02d", int(quarter)+1)
 			},
 		},
 		"s": {
@@ -309,7 +317,7 @@ var Luxon = DateFormatterNoPrefix{
 				_, offsetSeconds := dt.Zone()
 				offsetHours := offsetSeconds / (60 * 60)
 				if offsetHours < 0 {
-					return fmt.Sprintf("-%d", offsetHours)
+					return fmt.Sprintf("%d", offsetHours)
 				}
 				return fmt.Sprintf("+%d", offsetHours)
 			},
@@ -323,6 +331,8 @@ var Luxon = DateFormatterNoPrefix{
 				sign := '+'
 				if offsetHours < 0 {
 					sign = '-'
+					offsetHours *= -1
+					offsetMinutes *= -1
 				}
 				return fmt.Sprintf("%c%02d:%02d", sign, offsetHours, offsetMinutes%60)
 			},
@@ -336,6 +346,8 @@ var Luxon = DateFormatterNoPrefix{
 				sign := '+'
 				if offsetHours < 0 {
 					sign = '-'
+					offsetHours *= -1
+					offsetMinutes *= -1
 				}
 				return fmt.Sprintf("%c%02d%02d", sign, offsetHours, offsetMinutes%60)
 			},

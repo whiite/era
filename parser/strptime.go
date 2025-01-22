@@ -267,7 +267,6 @@ var Strptime = DateFormatterPrefix{
 					offsetMinutes *= -1
 				}
 				return fmt.Sprintf("%c%02d%02d", sign, offsetHours, offsetMinutes%60)
-
 			},
 		},
 		'Z': {
