@@ -95,6 +95,18 @@ var MomentJs = DateFormatterString{
 				return locale.WeekdayWide(dt.Weekday())
 			},
 		},
+		"e": {
+			Desc: "Day of week where Monday = 1 and Sunday = 0 - (0-6)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return strconv.Itoa(int(dt.Weekday()))
+			},
+		},
+		"E": {
+			Desc: "Day of week where Monday = 1 and Sunday = 7 - (1-7)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return strconv.Itoa((int(dt.Weekday())+6)%7 + 1)
+			},
+		},
 		"H": {
 			Desc:   "Hour in 24 hour format (0-23)",
 			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Hour()) },
