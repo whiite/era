@@ -26,3 +26,13 @@ func NextWeekday(day time.Weekday, t time.Time) time.Time {
 	daysUntilDay := (7 - t.Weekday() + day) % 7
 	return time.Date(t.Year(), t.Month(), t.Day()+int(daysUntilDay), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), t.Location())
 }
+
+// Quarter of the provided year in the range of 1-4
+func YearQuarter(t time.Time) int {
+	daysInYear := float64(YearEnd(t).YearDay())
+	quarterZeroed := (float64(t.YearDay()) / daysInYear) * 4
+	if quarterZeroed == 4 {
+		quarterZeroed = 3
+	}
+	return int(quarterZeroed + 1)
+}
