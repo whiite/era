@@ -260,13 +260,7 @@ var Strptime = DateFormatterPrefix{
 				_, offsetSeconds := dt.Zone()
 				offsetMinutes := offsetSeconds / 60
 				offsetHours := offsetMinutes / 60
-				sign := '+'
-				if offsetHours < 0 {
-					sign = '-'
-					offsetHours *= -1
-					offsetMinutes *= -1
-				}
-				return fmt.Sprintf("%c%02d%02d", sign, offsetHours, offsetMinutes%60)
+				return fmt.Sprintf("%+03d%02d", offsetHours, offsetMinutes%60)
 			},
 		},
 		'Z': {
