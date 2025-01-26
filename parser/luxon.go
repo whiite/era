@@ -10,7 +10,7 @@ import (
 )
 
 // Formats date strings via the same system as `strptime`
-var Luxon = DateFormatterNoPrefix{
+var Luxon = DateFormatterString{
 	escapeChars: []rune{'\''},
 	tokenMap: map[string]FormatToken[string]{
 		"a": {
@@ -122,8 +122,14 @@ var Luxon = DateFormatterNoPrefix{
 			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Hour()) },
 		},
 		"h": {
-			Desc:   "Hour in 12 hour format (1-12)",
-			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Hour() % 12) },
+			Desc: "Hour in 12 hour format (1-12)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				hour := dt.Hour() % 12
+				if hour == 0 {
+					hour = 12
+				}
+				return strconv.Itoa(hour)
+			},
 		},
 		"hh": {
 			Desc: "Hour in 12 hour format zero padded to two digits (01-12)",
@@ -199,17 +205,13 @@ var Luxon = DateFormatterNoPrefix{
 		"q": {
 			Desc: "Quarter of year (1-4)",
 			expand: func(dt time.Time, locale locales.Translator) string {
-				daysInYear := float64(dateutils.YearEnd(dt).YearDay())
-				quarter := (float64(dt.YearDay()) / daysInYear) * 4
-				return strconv.Itoa(int(quarter) + 1)
+				return strconv.Itoa(dateutils.YearQuarter(dt))
 			},
 		},
 		"qq": {
 			Desc: "Quarter of year zero padded to two digits (01-04)",
 			expand: func(dt time.Time, locale locales.Translator) string {
-				daysInYear := float64(dateutils.YearEnd(dt).YearDay())
-				quarter := (float64(dt.YearDay()) / daysInYear) * 4
-				return fmt.Sprintf("%02d", int(quarter)+1)
+				return fmt.Sprintf("%02d", dateutils.YearQuarter(dt))
 			},
 		},
 		"s": {
@@ -316,10 +318,7 @@ var Luxon = DateFormatterNoPrefix{
 			expand: func(dt time.Time, locale locales.Translator) string {
 				_, offsetSeconds := dt.Zone()
 				offsetHours := offsetSeconds / (60 * 60)
-				if offsetHours < 0 {
-					return fmt.Sprintf("%d", offsetHours)
-				}
-				return fmt.Sprintf("+%d", offsetHours)
+				return fmt.Sprintf("%+d", offsetHours)
 			},
 		},
 		"ZZ": {
@@ -328,13 +327,7 @@ var Luxon = DateFormatterNoPrefix{
 				_, offsetSeconds := dt.Zone()
 				offsetMinutes := offsetSeconds / 60
 				offsetHours := offsetMinutes / 60
-				sign := '+'
-				if offsetHours < 0 {
-					sign = '-'
-					offsetHours *= -1
-					offsetMinutes *= -1
-				}
-				return fmt.Sprintf("%c%02d:%02d", sign, offsetHours, offsetMinutes%60)
+				return fmt.Sprintf("%+03d:%02d", offsetHours, offsetMinutes%60)
 			},
 		},
 		"ZZZ": {
@@ -343,13 +336,7 @@ var Luxon = DateFormatterNoPrefix{
 				_, offsetSeconds := dt.Zone()
 				offsetMinutes := offsetSeconds / 60
 				offsetHours := offsetMinutes / 60
-				sign := '+'
-				if offsetHours < 0 {
-					sign = '-'
-					offsetHours *= -1
-					offsetMinutes *= -1
-				}
-				return fmt.Sprintf("%c%02d%02d", sign, offsetHours, offsetMinutes%60)
+				return fmt.Sprintf("%+03d%02d", offsetHours, offsetMinutes%60)
 			},
 		},
 		"ZZZZ": {
