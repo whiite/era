@@ -42,6 +42,21 @@ func execLuxon(format string, dt time.Time, t *testing.T) string {
 	return output[:len(output)-1]
 }
 
+func execMoment(format string, dt time.Time, t *testing.T) string {
+	evalStr := fmt.Sprintf("(await import('npm:moment-timezone')).default.tz(%d, %q).format(%q)", dt.UnixMilli(), dt.Location(), format)
+	cmd := exec.Command("deno", "eval", "-p", evalStr)
+	var out strings.Builder
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		t.Errorf("Could not run '%s': %s", cmd.Path, err)
+	}
+	output := out.String()
+	// Remove newline char appended to the end of stdout
+	// Deliberately don't use trim in case of intentional \n formats
+	return output[:len(output)-1]
+}
+
 type compareCtx struct {
 	dt        time.Time
 	locale    locales.Translator
@@ -57,6 +72,8 @@ func compareFormat(ctx compareCtx, t *testing.T) {
 	execCmd := execDate
 	if ctx.formatter == "luxon" {
 		execCmd = execLuxon
+	} else if ctx.formatter == "moment" {
+		execCmd = execMoment
 	}
 	want := execCmd(ctx.format, ctx.dt, t)
 	if got != want {
@@ -83,12 +100,15 @@ func TestTokensStrptime(t *testing.T) {
 
 			for token := range tokens {
 				format := fmt.Sprintf("%%%c", token)
-				compareFormat(compareCtx{
-					dt:        dt.In(loc),
-					locale:    en_GB.New(),
-					formatter: "strptime",
-					format:    format,
-				}, t)
+				t.Run("", func(t *testing.T) {
+					t.Parallel()
+					compareFormat(compareCtx{
+						dt:        dt.In(loc),
+						locale:    en_GB.New(),
+						formatter: "strptime",
+						format:    format,
+					}, t)
+				})
 			}
 		}
 	}
@@ -100,6 +120,34 @@ func TestTokensLuxon(t *testing.T) {
 
 	for _, datestr := range []string{"2024-01-07", "1997-01-04", "1989-12-31"} {
 		dt, _ := time.Parse(time.DateOnly, datestr)
+		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"}[1:2] {
+			loc, err := time.LoadLocation(loc)
+			if err != nil {
+				t.Errorf("Location '%s' is unsupported: %s", loc, err)
+				break
+			}
+
+			for token := range tokens {
+				t.Run("", func(t *testing.T) {
+					t.Parallel()
+					compareFormat(compareCtx{
+						dt:        dt.In(loc),
+						locale:    en_GB.New(),
+						formatter: "luxon",
+						format:    token,
+					}, t)
+				})
+			}
+		}
+	}
+
+}
+
+func _TestTokensMoment(t *testing.T) {
+	tokens := parser.MomentJs.TokenMapExpanded()
+
+	for _, datestr := range []string{"2024-01-07", "1997-01-04", "1989-12-31"}[:1] {
+		dt, _ := time.Parse(time.DateOnly, datestr)
 		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"}[:1] {
 			loc, err := time.LoadLocation(loc)
 			if err != nil {
@@ -108,12 +156,15 @@ func TestTokensLuxon(t *testing.T) {
 			}
 
 			for token := range tokens {
-				compareFormat(compareCtx{
-					dt:        dt.In(loc),
-					locale:    en_GB.New(),
-					formatter: "luxon",
-					format:    token,
-				}, t)
+				t.Run("", func(t *testing.T) {
+					t.Parallel()
+					compareFormat(compareCtx{
+						dt:        dt.In(loc),
+						locale:    en_GB.New(),
+						formatter: "moment",
+						format:    token,
+					}, t)
+				})
 			}
 		}
 	}
@@ -136,51 +187,54 @@ func TestFormatStringsStrptime(t *testing.T) {
 				"% %V%% %t %t",
 				"%n%n%n",
 			} {
-				compareFormat(compareCtx{
-					dt:        dt.In(loc),
-					locale:    en_GB.New(),
-					formatter: "strptime",
-					format:    formatstr,
-				}, t)
+				t.Run("", func(t *testing.T) {
+					t.Parallel()
+					compareFormat(compareCtx{
+						dt:        dt.In(loc),
+						locale:    en_GB.New(),
+						formatter: "strptime",
+						format:    formatstr,
+					}, t)
+				})
 			}
 		}
 	}
 
 }
 
-//	func TestFormatStringsLuxon(t *testing.T) {
-//		for _, datestr := range []string{"2024-01-07", "1997-01-04", "1989-12-31"} {
-//			dt, _ := time.Parse(time.DateOnly, datestr)
-//			for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
-//				loc, err := time.LoadLocation(loc)
-//				if err != nil {
-//					t.Errorf("Location '%s' is unsupported: %s", loc, err)
-//					break
-//				}
-//
-//				for _, formatstr := range []string{
-//					"%toutput: %G%M%%%S%v",
-//					"%%%%%%%S",
-//					"% %V%% %t %t",
-//					"%n%n%n",
-//				} {
-//					compareFormat(compareCtx{
-//						dt:        dt.In(loc),
-//						locale:    en_GB.New(),
-//						formatter: "strptime",
-//						format:    formatstr,
-//					}, t)
-//				}
-//			}
-//		}
-//
-// }
+func TestFormatStringsLuxon(t *testing.T) {
+	for _, datestr := range []string{"2024-01-07", "1997-01-04", "1989-12-31"} {
+		dt, _ := time.Parse(time.DateOnly, datestr)
+		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
+			loc, err := time.LoadLocation(loc)
+			if err != nil {
+				t.Errorf("Location '%s' is unsupported: %s", loc, err)
+				break
+			}
+
+			for _, formatstr := range []string{
+				"[output:] DDDanGeROUS",
+			} {
+				t.Run("", func(t *testing.T) {
+					t.Parallel()
+					compareFormat(compareCtx{
+						dt:        dt.In(loc),
+						locale:    en_GB.New(),
+						formatter: "strptime",
+						format:    formatstr,
+					}, t)
+				})
+			}
+		}
+	}
+
+}
 
 func _TestScenario(t *testing.T) {
 	dt, _ := time.Parse(time.DateOnly, "1989-12-31")
 
-	loc, err := time.LoadLocation("America/Los_Angeles")
-	// loc, err := time.LoadLocation("Europe/London")
+	// loc, err := time.LoadLocation("America/Los_Angeles")
+	loc, err := time.LoadLocation("Europe/London")
 	if err != nil {
 		t.Errorf("Location '%s' is unsupported: %s", loc, err)
 		return
