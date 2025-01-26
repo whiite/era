@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"monokuro/era/dateutils"
 	"strconv"
 	"time"
 
@@ -9,7 +10,7 @@ import (
 )
 
 // Formats time according to the momentjs tokens
-var MomentJs = DateFormatterNoPrefix{
+var MomentJs = DateFormatterString{
 	escapeChars: []rune{'[', ']'},
 	tokenMap: map[string]FormatToken[string]{
 		"M": {
@@ -38,11 +39,11 @@ var MomentJs = DateFormatterNoPrefix{
 		},
 		"Q": {
 			Desc:   "Quarter of year (1-4)",
-			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(time.Now().YearDay() % 4) },
+			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dateutils.YearQuarter(dt)) },
 		},
 		"Qo": {
 			Desc:   "Quarter of year suffixed - '1st', '2nd', '3rd', '4th'",
-			expand: func(dt time.Time, locale locales.Translator) string { return numberSuffixed(time.Now().YearDay() % 4) },
+			expand: func(dt time.Time, locale locales.Translator) string { return numberSuffixed(dateutils.YearQuarter(dt)) },
 		},
 		"D": {
 			Desc:   "Day of month (1-31)",
@@ -103,8 +104,14 @@ var MomentJs = DateFormatterNoPrefix{
 			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Hour()) },
 		},
 		"h": {
-			Desc:   "Hour in 12 hour format (1-12)",
-			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Hour() % 12) },
+			Desc: "Hour in 12 hour format (1-12)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				hour := dt.Hour() % 12
+				if hour == 0 {
+					hour = 12
+				}
+				return strconv.Itoa(hour)
+			},
 		},
 		"hh": {
 			Desc: "Hour in 12 hour format zero padded to two digits (01-12)",
@@ -117,8 +124,14 @@ var MomentJs = DateFormatterNoPrefix{
 			},
 		},
 		"k": {
-			Desc:   "Hour in 24 hour format starting from 1 (1-24)",
-			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Hour()) },
+			Desc: "Hour in 24 hour format starting from 1 (1-24)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				hour := dt.Hour()
+				if hour == 0 {
+					hour = 24
+				}
+				return strconv.Itoa(hour)
+			},
 		},
 		"kk": {
 			Desc: "Hour in 24 hour format starting from 1 zero padded to two digits (01-24)",
@@ -144,7 +157,7 @@ var MomentJs = DateFormatterNoPrefix{
 		},
 		"YYYYYY": {
 			Desc:   "Year number zeo padded to 6 digits - '001999', '002007'",
-			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%06d", dt.Year()) },
+			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%+07d", dt.Year()) },
 		},
 		"m": {
 			Desc:   "Minutes (0-59)",

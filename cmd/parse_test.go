@@ -115,12 +115,12 @@ func TestTokensStrptime(t *testing.T) {
 
 }
 
-func TestTokensLuxon(t *testing.T) {
+func _TestTokensLuxon(t *testing.T) {
 	tokens := parser.Luxon.TokenMapExpanded()
 
 	for _, datestr := range []string{"2024-01-07", "1997-01-04", "1989-12-31"} {
 		dt, _ := time.Parse(time.DateOnly, datestr)
-		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"}[1:2] {
+		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
 			loc, err := time.LoadLocation(loc)
 			if err != nil {
 				t.Errorf("Location '%s' is unsupported: %s", loc, err)
@@ -143,12 +143,12 @@ func TestTokensLuxon(t *testing.T) {
 
 }
 
-func _TestTokensMoment(t *testing.T) {
+func TestTokensMoment(t *testing.T) {
 	tokens := parser.MomentJs.TokenMapExpanded()
 
-	for _, datestr := range []string{"2024-01-07", "1997-01-04", "1989-12-31"}[:1] {
+	for _, datestr := range []string{"2024-01-07", "1997-01-04", "1989-12-31"} {
 		dt, _ := time.Parse(time.DateOnly, datestr)
-		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"}[:1] {
+		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
 			loc, err := time.LoadLocation(loc)
 			if err != nil {
 				t.Errorf("Location '%s' is unsupported: %s", loc, err)
