@@ -81,19 +81,21 @@ func (formatter DateFormatterPrefix) TokenDesc() string {
 	return output.String()
 }
 
-type DateFormatterNoPrefix struct {
+type DateFormatterString struct {
 	escapeChars []rune
 	tokenMap    map[string]FormatToken[string]
+	tokenGraph  *TokenGraphNode[FormatToken[string]]
 }
 
-func (formatter DateFormatterNoPrefix) Parse(dt time.Time, locale locales.Translator, str *string) string {
+func (formatter *DateFormatterString) Parse(dt time.Time, locale locales.Translator, str *string) string {
 	var formattedDate strings.Builder
 	var tokens strings.Builder
 
-	tokenMap := formatter.TokenMapExpanded()
-	tokenNodeRoot := createTokenGraph(&tokenMap)
-	// tokenNodeRoot := createTokenGraph(&formatter.tokenMap)
-	tokenNode := tokenNodeRoot
+	if formatter.tokenGraph == nil {
+		tokenMap := formatter.TokenMapExpanded()
+		formatter.tokenGraph = createTokenGraph(&tokenMap)
+	}
+	tokenNode := formatter.tokenGraph
 
 	escapeSupport := len(formatter.escapeChars) > 0
 	escapeMode := false
@@ -129,8 +131,8 @@ func (formatter DateFormatterNoPrefix) Parse(dt time.Time, locale locales.Transl
 		tokens.Reset()
 		formattedDate.WriteRune(char)
 
-		tokenNode = tokenNodeRoot
-		if node, hasToken := tokenNodeRoot.children[char]; hasToken && !escapeMode {
+		tokenNode = formatter.tokenGraph
+		if node, hasToken := formatter.tokenGraph.children[char]; hasToken && !escapeMode {
 			tokenNode = node
 		}
 	}
@@ -145,7 +147,7 @@ func (formatter DateFormatterNoPrefix) Parse(dt time.Time, locale locales.Transl
 }
 
 // Expands the inner token map to include aliases
-func (formatter DateFormatterNoPrefix) TokenMapExpanded() map[string]FormatToken[string] {
+func (formatter DateFormatterString) TokenMapExpanded() map[string]FormatToken[string] {
 	expandedTokenMap := map[string]FormatToken[string]{}
 	for token, tokenDef := range formatter.tokenMap {
 		expandedTokenMap[token] = tokenDef
@@ -156,7 +158,7 @@ func (formatter DateFormatterNoPrefix) TokenMapExpanded() map[string]FormatToken
 	return expandedTokenMap
 }
 
-func (formatter DateFormatterNoPrefix) TokenDesc() string {
+func (formatter DateFormatterString) TokenDesc() string {
 	var output strings.Builder
 	for _, tokenStr := range slices.Sorted(maps.Keys(formatter.tokenMap)) {
 		tokenDef := formatter.tokenMap[tokenStr]
