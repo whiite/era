@@ -20,11 +20,11 @@ var tokensCmd = &cobra.Command{
 		var selectedParser parser.DateFormatter
 		switch Parser {
 		case "moment", "momentjs":
-			selectedParser = parser.MomentJs
+			selectedParser = &parser.MomentJs
 		case "luxon":
-			selectedParser = parser.Luxon
+			selectedParser = &parser.Luxon
 		case "strptime":
-			selectedParser = parser.Strptime
+			selectedParser = &parser.Strptime
 		default:
 			return fmt.Errorf("No parser specified")
 		}
