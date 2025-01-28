@@ -155,6 +155,28 @@ var MomentJs = DateFormatterString{
 				return fmt.Sprintf("%02d", hour)
 			},
 		},
+		"W": {
+			Desc: "ISO week of year (1-53)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				_, week := dt.ISOWeek()
+				return strconv.Itoa(week)
+			},
+		},
+		"Wo": {
+			Desc: "ISO week of year zero padded (01-53)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				_, week := dt.ISOWeek()
+				return numberSuffixed(week)
+			},
+		},
+		"WW": {
+			Desc: "ISO week of year zero padded (01-53)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				_, week := dt.ISOWeek()
+				return fmt.Sprintf("%02d", week)
+			},
+		},
+
 		"Y": {
 			Desc:   "Year number - '1999', '2007'",
 			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Year()) },

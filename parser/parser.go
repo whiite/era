@@ -177,12 +177,18 @@ func (formatter DateFormatterString) TokenDesc() string {
 
 func numberSuffixed(num int) string {
 	numstr := strconv.Itoa(num)
-	switch numstr {
-	case "1", "21", "31":
+
+	// Keep "th" suffix for 11, 12, 13 ending ints
+	if twoDigit := num % 100; twoDigit >= 11 && twoDigit <= 13 {
+		return numstr + "th"
+	}
+
+	switch num % 10 {
+	case 1:
 		return numstr + "st"
-	case "2", "22":
+	case 2:
 		return numstr + "nd"
-	case "3", "23":
+	case 3:
 		return numstr + "rd"
 	default:
 		return numstr + "th"
