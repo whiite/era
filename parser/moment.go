@@ -13,6 +13,26 @@ import (
 var MomentJs = DateFormatterString{
 	escapeChars: []rune{'[', ']'},
 	tokenMap: map[string]FormatToken[string]{
+		"a": {
+			Desc: "Meridiem - 'am'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				// TODO: locale
+				if dt.Hour() < 12 {
+					return "am"
+				}
+				return "pm"
+			},
+		},
+		"A": {
+			Desc: "Meridiem capitalised - 'AM'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				// TODO: locale
+				if dt.Hour() < 12 {
+					return "AM"
+				}
+				return "PM"
+			},
+		},
 		"M": {
 			Desc:   "Month number (1-12)",
 			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(int(dt.Month())) },
