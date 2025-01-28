@@ -9,6 +9,13 @@ import (
 	"github.com/go-playground/locales"
 )
 
+// TODO: missing tokens:
+// - "ZZZZZ" - full offset name e.g. Eastern Standard Time
+// - "TTTT" - localised 24 hour time with full time zone name
+// - "n", "nn" - local week numbers (unpadded and padded)
+// - "f", "ff", "fff", "ffff" - localised date and time
+// - "F", "FF", "FFF", "FFFF" - localised date and time with seconds
+
 // Formats date strings via the same system as `strptime`
 var Luxon = DateFormatterString{
 	escapeChars: []rune{'\''},
@@ -255,6 +262,25 @@ var Luxon = DateFormatterString{
 			Desc: "Localised time with seconds and offset name - '9:07:53 AM Eastern Daylight Time'",
 			expand: func(dt time.Time, locale locales.Translator) string {
 				return locale.FmtTimeFull(dt)
+			},
+		},
+		"T": {
+			Desc: "Localised 24 hour time - '13:07'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%02d:%02d", dt.Hour(), dt.Minute())
+			},
+		},
+		"TT": {
+			Desc: "Localised 24 hour time with seconds - '13:07'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%02d:%02d:%02d", dt.Hour(), dt.Minute(), dt.Second())
+			},
+		},
+		"TTT": {
+			Desc: "Localised 24 hour time with seconds and abbreviated offset - '13:07 CST'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				offsetName, _ := dt.Zone()
+				return fmt.Sprintf("%d:%02d:%02d %s", dt.Hour(), dt.Minute(), dt.Second(), offsetName)
 			},
 		},
 		"W": {
