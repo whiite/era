@@ -155,6 +155,7 @@ var MomentJs = DateFormatterString{
 				return fmt.Sprintf("%02d", hour)
 			},
 		},
+		// TODO: "w", "wo", "ww" - what do these represent?
 		"W": {
 			Desc: "ISO week of year (1-53)",
 			expand: func(dt time.Time, locale locales.Translator) string {
@@ -216,6 +217,32 @@ var MomentJs = DateFormatterString{
 		"x": {
 			Desc:   "Unix timestamp in milliseconds",
 			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(int(dt.UnixMilli())) },
+		},
+		"z": {
+			Desc: "Abbreviated time zone offset - 'GMT', 'CEST', '+0530'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				offsetName, _ := dt.Zone()
+				return offsetName
+			},
+			aliases: []string{"zz"},
+		},
+		"Z": {
+			Desc: "Time zone offset - '+05:30', '-03:00'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				_, offsetSeconds := dt.Zone()
+				offsetMinutes := offsetSeconds / 60
+				offsetHours := offsetMinutes / 60
+				return fmt.Sprintf("%+03d:%02d", offsetHours, offsetMinutes%60)
+			},
+		},
+		"ZZ": {
+			Desc: "Time zone offset formatted without the dividing ':' - '+0530', '-0300'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				_, offsetSeconds := dt.Zone()
+				offsetMinutes := offsetSeconds / 60
+				offsetHours := offsetMinutes / 60
+				return fmt.Sprintf("%+03d%02d", offsetHours, offsetMinutes%60)
+			},
 		},
 	},
 }
