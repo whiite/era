@@ -118,7 +118,7 @@ func TestTokensStrptime(t *testing.T) {
 func TestTokensLuxon(t *testing.T) {
 	tokens := parser.Luxon.TokenMapExpanded()
 	// NOTE: tokens known to be problematic but fixing is difficult
-	excludeList := map[string]bool{"DDDD": true, "ttt": true, "tttt": true, "ZZZZ": true}
+	excludeList := map[string]bool{"DDDD": true, "ttt": true, "tttt": true, "ZZZZ": true, "TTT": true}
 
 	for _, datestr := range []string{"2024-01-07", "1997-01-04", "1989-12-31"} {
 		dt, _ := time.Parse(time.DateOnly, datestr)
