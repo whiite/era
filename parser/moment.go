@@ -9,6 +9,13 @@ import (
 	"github.com/go-playground/locales"
 )
 
+// TODO: missing tokens
+// - "w", "wo", "ww" - week numbers but what do these represent?
+// - "y" - era year
+// - "N"/"NN"/"NNN", "NNNN", "NNNNNN" - era name
+// - "gg", "gggg" - week year?
+// - "GG", "GGGG" - week year ISO?
+
 // Formats time according to the momentjs tokens
 var MomentJs = DateFormatterString{
 	escapeChars: []rune{'[', ']'},
@@ -175,7 +182,6 @@ var MomentJs = DateFormatterString{
 				return fmt.Sprintf("%02d", hour)
 			},
 		},
-		// TODO: "w", "wo", "ww" - what do these represent?
 		"W": {
 			Desc: "ISO week of year (1-53)",
 			expand: func(dt time.Time, locale locales.Translator) string {
@@ -229,6 +235,60 @@ var MomentJs = DateFormatterString{
 		"ss": {
 			Desc:   "Seconds zero padded to two digits (00-59)",
 			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Second()) },
+		},
+		"S": {
+			Desc: "Fractional seconds to one digit (0-9)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return strconv.Itoa(dt.Nanosecond() / 100_000_000)
+			},
+		},
+		"SS": {
+			Desc: "Fractional seconds to two digits (00-99)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%02d", (dt.Nanosecond() / 10_000_000))
+			},
+		},
+		"SSS": {
+			Desc: "Fractional seconds to three digits (000-999)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%03d", (dt.Nanosecond() / 1_000_000))
+			},
+		},
+		"SSSS": {
+			Desc: "Fractional seconds to four digits (0000-9999)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%04d", (dt.Nanosecond() / 100_000))
+			},
+		},
+		"SSSSS": {
+			Desc: "Fractional seconds to five digits (00000-99999)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%05d", (dt.Nanosecond() / 10_000))
+			},
+		},
+		"SSSSSS": {
+			Desc: "Fractional seconds to six digits (000000-999999)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%06d", (dt.Nanosecond() / 1_000))
+			},
+		},
+		"SSSSSSS": {
+			Desc: "Fractional seconds to seven digits (0000000-9999999)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%07d", (dt.Nanosecond() / 100))
+			},
+		},
+		"SSSSSSSS": {
+			Desc: "Fractional seconds to eight digits (00000000-99999999)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%08d", dt.Nanosecond()/10)
+			},
+		},
+		"SSSSSSSSS": {
+			Desc: "Fractional seconds to eight digits (00000000-99999999)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%09d", dt.Nanosecond())
+			},
 		},
 		"X": {
 			Desc:   "Unix timestamp in seconds",
