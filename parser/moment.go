@@ -10,11 +10,8 @@ import (
 )
 
 // TODO: missing tokens
-// - "w", "wo", "ww" - week numbers but what do these represent?
-// - "y" - era year
-// - "N"/"NN"/"NNN", "NNNN", "NNNNNN" - era name
 // - "gg", "gggg" - week year?
-// - "GG", "GGGG" - week year ISO?
+// - "w", "wo", "ww" - week numbers but what do these represent?
 
 // Formats time according to the momentjs tokens
 var MomentJs = DateFormatterString{
@@ -62,6 +59,25 @@ var MomentJs = DateFormatterString{
 			Desc: "Month name - 'January', 'February'",
 			expand: func(dt time.Time, locale locales.Translator) string {
 				return locale.MonthWide(dt.Month())
+			},
+		},
+		"N": {
+			Desc: "Era name abbreviated - 'BC', 'AD'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				if dt.Year() < 0 {
+					return "BC"
+				}
+				return "AD"
+			},
+			aliases: []string{"NN", "NNN", "NNNNN"},
+		},
+		"NNNN": {
+			Desc: "Era name in full - 'Before Christ', 'Anno Domini'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				if dt.Year() < 0 {
+					return "Before Christ"
+				}
+				return "Anno Domini"
 			},
 		},
 		"Q": {
@@ -205,16 +221,19 @@ var MomentJs = DateFormatterString{
 		},
 
 		"Y": {
-			Desc:   "Year number - '1999', '2007'",
-			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Year()) },
+			Desc:    "Year number - '1999', '2007'",
+			expand:  func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Year()) },
+			aliases: []string{"y"},
 		},
 		"YY": {
-			Desc:   "Year number truncated to last two digits - '99', '07'",
-			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Year() % 100) },
+			Desc:    "Year number truncated to last two digits - '99', '07'",
+			expand:  func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Year() % 100) },
+			aliases: []string{"GG"},
 		},
 		"YYYY": {
-			Desc:   "Year number - '1999', '2007'",
-			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Year()) },
+			Desc:    "Year number - '1999', '2007'",
+			expand:  func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Year()) },
+			aliases: []string{"GGGG"},
 		},
 		"YYYYYY": {
 			Desc:   "Year number zeo padded to 6 digits - '001999', '002007'",
