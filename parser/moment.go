@@ -10,8 +10,7 @@ import (
 )
 
 // TODO: missing tokens
-// - "gg", "gggg" - week year?
-// - "w", "wo", "ww" - week numbers but what do these represent?
+// - "gg", "gggg" - week year? Seem to relate to the "w" tokens
 
 // Formats time according to the momentjs tokens
 var MomentJs = DateFormatterString{
@@ -196,6 +195,42 @@ var MomentJs = DateFormatterString{
 					hour = 24
 				}
 				return fmt.Sprintf("%02d", hour)
+			},
+		},
+		"w": {
+			Desc: "Week of year where the first Sunday before January 1st is considered week one (1-53)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				midnight := dateutils.DayStart(dt)
+				jan1st := dateutils.YearStart(midnight)
+				weeksInYear := dateutils.YearEnd(dt).Sub(jan1st).Hours() / 24 / 7
+
+				firstSunday := dateutils.PreviousWeekday(time.Sunday, jan1st)
+				weekDiff := midnight.Sub(firstSunday).Hours() / 24 / 7
+				return strconv.Itoa(int(weekDiff)%int(weeksInYear) + 1)
+			},
+		},
+		"wo": {
+			Desc: "Week of year suffixed where the first Sunday before January 1st is considered week one (1st-53rd)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				midnight := dateutils.DayStart(dt)
+				jan1st := dateutils.YearStart(midnight)
+				weeksInYear := dateutils.YearEnd(dt).Sub(jan1st).Hours() / 24 / 7
+
+				firstSunday := dateutils.PreviousWeekday(time.Sunday, jan1st)
+				weekDiff := midnight.Sub(firstSunday).Hours() / 24 / 7
+				return numberSuffixed(int(weekDiff)%int(weeksInYear) + 1)
+			},
+		},
+		"ww": {
+			Desc: "Week of year where the first Sunday before January 1st is considered week one padded to two digits (01-53)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				midnight := dateutils.DayStart(dt)
+				jan1st := dateutils.YearStart(midnight)
+				weeksInYear := dateutils.YearEnd(dt).Sub(jan1st).Hours() / 24 / 7
+
+				firstSunday := dateutils.PreviousWeekday(time.Sunday, jan1st)
+				weekDiff := midnight.Sub(firstSunday).Hours() / 24 / 7
+				return fmt.Sprintf("%02d", int(weekDiff)%int(weeksInYear)+1)
 			},
 		},
 		"W": {
