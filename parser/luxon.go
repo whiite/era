@@ -325,7 +325,7 @@ var Luxon = DateFormatterString{
 		},
 		"yy": {
 			Desc:    "Year number truncated to last two digits - '99', '07'",
-			expand:  func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Year() % 100) },
+			expand:  func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Year()%100) },
 			aliases: []string{"ii"},
 		},
 		"yyyy": {
