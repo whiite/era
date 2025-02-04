@@ -86,10 +86,12 @@ wanted: '%s'`, ctx.formatter, ctx.format, ctx.dt.Location().String(), ctx.dt.Str
 	}
 }
 
+var testDates = []string{"2024-01-07", "1997-01-04", "1989-12-31", "2007-01-01"}
+
 func TestTokensStrptime(t *testing.T) {
 	tokens := parser.Strptime.TokenMapExpanded()
 
-	for _, datestr := range []string{"2024-01-07", "1997-01-04", "1989-12-31"} {
+	for _, datestr := range testDates {
 		dt, _ := time.Parse(time.DateOnly, datestr)
 		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
 			loc, err := time.LoadLocation(loc)
@@ -120,7 +122,7 @@ func TestTokensLuxon(t *testing.T) {
 	// NOTE: tokens known to be problematic but fixing is difficult
 	excludeList := map[string]bool{"DDDD": true, "ttt": true, "tttt": true, "ZZZZ": true, "TTT": true}
 
-	for _, datestr := range []string{"2024-01-07", "1997-01-04", "1989-12-31"} {
+	for _, datestr := range testDates {
 		dt, _ := time.Parse(time.DateOnly, datestr)
 		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
 			loc, err := time.LoadLocation(loc)
@@ -151,7 +153,7 @@ func TestTokensLuxon(t *testing.T) {
 func TestTokensMoment(t *testing.T) {
 	tokens := parser.MomentJs.TokenMapExpanded()
 
-	for _, datestr := range []string{"2024-01-07", "1997-01-04", "1989-12-31"} {
+	for _, datestr := range testDates {
 		dt, _ := time.Parse(time.DateOnly, datestr)
 		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
 			loc, err := time.LoadLocation(loc)
@@ -177,7 +179,7 @@ func TestTokensMoment(t *testing.T) {
 }
 
 func TestFormatStringsStrptime(t *testing.T) {
-	for _, datestr := range []string{"2024-01-07", "1997-01-04", "1989-12-31"} {
+	for _, datestr := range testDates {
 		dt, _ := time.Parse(time.DateOnly, datestr)
 		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
 			loc, err := time.LoadLocation(loc)
@@ -208,7 +210,7 @@ func TestFormatStringsStrptime(t *testing.T) {
 }
 
 func TestFormatStringsLuxon(t *testing.T) {
-	for _, datestr := range []string{"2024-01-07", "1997-01-04", "1989-12-31"} {
+	for _, datestr := range testDates {
 		dt, _ := time.Parse(time.DateOnly, datestr)
 		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
 			loc, err := time.LoadLocation(loc)
@@ -235,7 +237,7 @@ func TestFormatStringsLuxon(t *testing.T) {
 
 }
 
-func _TestScenario(t *testing.T) {
+func TestScenario(t *testing.T) {
 	dt, _ := time.Parse(time.DateOnly, "1989-12-31")
 
 	// loc, err := time.LoadLocation("America/Los_Angeles")
@@ -248,8 +250,8 @@ func _TestScenario(t *testing.T) {
 	compareFormat(compareCtx{
 		dt:        dt.In(loc),
 		locale:    en_GB.New(),
-		formatter: "luxon",
-		format:    "q",
+		formatter: "moment",
+		format:    "gg",
 	}, t)
 
 }
