@@ -27,12 +27,20 @@ func NextWeekday(day time.Weekday, t time.Time) time.Time {
 	return time.Date(t.Year(), t.Month(), t.Day()+int(daysUntilDay), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), t.Location())
 }
 
-// Returns midnight of the next desired weekday
+func WeekEnd(day time.Weekday, t time.Time) time.Time {
+	daysUntilDay := (7 - t.Weekday() + day) % 7
+	if daysUntilDay == 0 {
+		daysUntilDay = 7
+	}
+	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location()).AddDate(0, 0, int(daysUntilDay))
+}
+
+// Returns midnight of the start of the week for a given day
 //
 // If the desired weekday is the current day then the current day will be returned
-func PreviousWeekday(day time.Weekday, t time.Time) time.Time {
+func WeekStart(day time.Weekday, t time.Time) time.Time {
 	daysUntilDay := (t.Weekday() + day) % 7
-	return time.Date(t.Year(), t.Month(), t.Day()-int(daysUntilDay), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), t.Location())
+	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location()).AddDate(0, 0, -int(daysUntilDay))
 }
 
 // Quarter of the provided year in the range of 1-4
