@@ -9,9 +9,6 @@ import (
 	"github.com/go-playground/locales"
 )
 
-// TODO: missing tokens
-// - "gg", "gggg" - week year? Seem to relate to the "w" tokens
-
 // Formats time according to the momentjs tokens
 var MomentJs = DateFormatterString{
 	escapeChars: []rune{'[', ']'},
@@ -149,6 +146,22 @@ var MomentJs = DateFormatterString{
 				return strconv.Itoa((int(dt.Weekday())+6)%7 + 1)
 			},
 		},
+		"gg": {
+			Desc: "Year of week where the last Sunday of the current week is used, truncated and zero padded to the last two digits - '97', '07'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				weekEnd := dateutils.WeekEnd(time.Sunday, dt)
+				return fmt.Sprintf("%02d", weekEnd.Year()%100)
+
+			},
+		},
+		"gggg": {
+			Desc: "Year of week where the last Sunday of the current week is used - '1997', '2007'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				weekEnd := dateutils.WeekEnd(time.Sunday, dt)
+				return strconv.Itoa(weekEnd.Year())
+
+			},
+		},
 		"H": {
 			Desc:   "Hour in 24 hour format (0-23)",
 			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Hour()) },
@@ -204,7 +217,7 @@ var MomentJs = DateFormatterString{
 				jan1st := dateutils.YearStart(midnight)
 				weeksInYear := dateutils.YearEnd(dt).Sub(jan1st).Hours() / 24 / 7
 
-				firstSunday := dateutils.PreviousWeekday(time.Sunday, jan1st)
+				firstSunday := dateutils.WeekStart(time.Sunday, jan1st)
 				weekDiff := midnight.Sub(firstSunday).Hours() / 24 / 7
 				return strconv.Itoa(int(weekDiff)%int(weeksInYear) + 1)
 			},
@@ -216,7 +229,7 @@ var MomentJs = DateFormatterString{
 				jan1st := dateutils.YearStart(midnight)
 				weeksInYear := dateutils.YearEnd(dt).Sub(jan1st).Hours() / 24 / 7
 
-				firstSunday := dateutils.PreviousWeekday(time.Sunday, jan1st)
+				firstSunday := dateutils.WeekStart(time.Sunday, jan1st)
 				weekDiff := midnight.Sub(firstSunday).Hours() / 24 / 7
 				return numberSuffixed(int(weekDiff)%int(weeksInYear) + 1)
 			},
@@ -228,7 +241,7 @@ var MomentJs = DateFormatterString{
 				jan1st := dateutils.YearStart(midnight)
 				weeksInYear := dateutils.YearEnd(dt).Sub(jan1st).Hours() / 24 / 7
 
-				firstSunday := dateutils.PreviousWeekday(time.Sunday, jan1st)
+				firstSunday := dateutils.WeekStart(time.Sunday, jan1st)
 				weekDiff := midnight.Sub(firstSunday).Hours() / 24 / 7
 				return fmt.Sprintf("%02d", int(weekDiff)%int(weeksInYear)+1)
 			},
@@ -261,8 +274,10 @@ var MomentJs = DateFormatterString{
 			aliases: []string{"y"},
 		},
 		"YY": {
-			Desc:    "Year number truncated to last two digits - '99', '07'",
-			expand:  func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(dt.Year() % 100) },
+			Desc: "Year number truncated to last two digits - '99', '07'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%02d", dt.Year()%100)
+			},
 			aliases: []string{"GG"},
 		},
 		"YYYY": {
