@@ -12,7 +12,6 @@ import (
 // TODO: missing tokens:
 // - "ZZZZZ" - full offset name e.g. Eastern Standard Time
 // - "TTTT" - localised 24 hour time with full time zone name
-// - "n", "nn" - local week numbers (unpadded and padded)
 // - "f", "ff", "fff", "ffff" - localised date and time
 // - "F", "FF", "FFF", "FFFF" - localised date and time with seconds
 
@@ -200,6 +199,30 @@ var Luxon = DateFormatterString{
 		"mm": {
 			Desc:   "Minutes zero padded to two digits (00-59)",
 			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Minute()) },
+		},
+		"n": {
+			Desc: "Week of year where the week containing January 1st is considered week one (1-53)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				midnight := dateutils.DayStart(dt)
+				jan1st := dateutils.YearStart(midnight)
+				weeksInYear := dateutils.YearEnd(dt).Sub(jan1st).Hours() / 24 / 7
+
+				lastSunday := dateutils.WeekEnd(time.Sunday, jan1st)
+				weekDiff := midnight.Sub(lastSunday).Hours() / 24 / 7
+				return strconv.Itoa(int(weekDiff)%int(weeksInYear) + 1)
+			},
+		},
+		"nn": {
+			Desc: "Week of year where the week containing January 1st is considered week one, zero padded to two digits (01-53)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				midnight := dateutils.DayStart(dt)
+				jan1st := dateutils.YearStart(midnight)
+				weeksInYear := dateutils.YearEnd(dt).Sub(jan1st).Hours() / 24 / 7
+
+				lastSunday := dateutils.WeekEnd(time.Sunday, jan1st)
+				weekDiff := midnight.Sub(lastSunday).Hours() / 24 / 7
+				return fmt.Sprintf("%02d", int(weekDiff)%int(weeksInYear)+1)
+			},
 		},
 		"o": {
 			Desc:   "Ordinal day of year (1-366)",
