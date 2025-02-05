@@ -25,37 +25,68 @@ type DateFormatter interface {
 }
 
 type DateFormatterPrefix struct {
-	Prefix   rune
-	tokenMap map[rune]FormatToken[rune]
+	Prefix     rune
+	tokenMap   map[string]FormatToken[string]
+	tokenGraph *TokenGraphNode[FormatToken[string]]
 }
 
 func (formatter DateFormatterPrefix) Parse(dt time.Time, locale locales.Translator, str *string) string {
 	var formattedDate strings.Builder
+	var tokens strings.Builder
+
+	if formatter.tokenGraph == nil {
+		tokenMap := formatter.TokenMapExpanded()
+		formatter.tokenGraph = createTokenGraph(&tokenMap)
+	}
+	tokenNode := formatter.tokenGraph
 	interpretMode := false
 
-	tokenMap := formatter.TokenMapExpanded()
 	for _, char := range *str {
 		if char == formatter.Prefix && !interpretMode {
 			interpretMode = true
 			continue
 		}
+		if !interpretMode {
+			formattedDate.WriteRune(char)
+			continue
+		}
 
-		if token, hasToken := tokenMap[char]; interpretMode && hasToken {
-			formattedDate.WriteString(token.expand(dt, locale))
-			interpretMode = false
+		if node, hasToken := tokenNode.children[char]; hasToken {
+			tokens.WriteRune(char)
+			tokenNode = node
+			continue
+		}
+
+		if formatFunc := tokenNode.value.expand; formatFunc != nil {
+			formattedDate.WriteString(formatFunc(dt, locale))
+		} else {
+			formattedDate.WriteString(tokens.String())
+		}
+
+		tokens.Reset()
+		interpretMode = false
+		tokenNode = formatter.tokenGraph
+
+		if char == formatter.Prefix {
+			interpretMode = true
 			continue
 		}
 
 		formattedDate.WriteRune(char)
-		interpretMode = false
+	}
+
+	if formatFunc := tokenNode.value.expand; formatFunc != nil {
+		formattedDate.WriteString(formatFunc(dt, locale))
+	} else {
+		formattedDate.WriteString(tokens.String())
 	}
 
 	return formattedDate.String()
 }
 
 // Expands the inner token map to include aliases
-func (formatter DateFormatterPrefix) TokenMapExpanded() map[rune]FormatToken[rune] {
-	expandedTokenMap := map[rune]FormatToken[rune]{}
+func (formatter DateFormatterPrefix) TokenMapExpanded() map[string]FormatToken[string] {
+	expandedTokenMap := map[string]FormatToken[string]{}
 	for token, tokenDef := range formatter.tokenMap {
 		expandedTokenMap[token] = tokenDef
 		for _, alias := range tokenDef.aliases {
@@ -69,11 +100,11 @@ func (formatter DateFormatterPrefix) TokenDesc() string {
 	var output strings.Builder
 	for _, tokenChar := range slices.Sorted(maps.Keys(formatter.tokenMap)) {
 		tokenDef := formatter.tokenMap[tokenChar]
-		output.WriteString(fmt.Sprintf("%c%c: %s\n", formatter.Prefix, tokenChar, tokenDef.Desc))
+		output.WriteString(fmt.Sprintf("%c%s: %s\n", formatter.Prefix, tokenChar, tokenDef.Desc))
 		if len(tokenDef.aliases) > 0 {
 			output.WriteString("  aliases:")
 			for _, alias := range tokenDef.aliases {
-				output.WriteString(fmt.Sprintf(" %c", alias))
+				output.WriteString(fmt.Sprintf(" %s", alias))
 			}
 			output.WriteString("\n")
 		}

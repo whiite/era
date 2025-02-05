@@ -101,7 +101,7 @@ func TestTokensStrptime(t *testing.T) {
 			}
 
 			for token := range tokens {
-				format := fmt.Sprintf("%%%c", token)
+				format := fmt.Sprintf("%%%s", token)
 				t.Run("", func(t *testing.T) {
 					t.Parallel()
 					compareFormat(compareCtx{
@@ -250,8 +250,8 @@ func TestScenario(t *testing.T) {
 	compareFormat(compareCtx{
 		dt:        dt.In(loc),
 		locale:    en_GB.New(),
-		formatter: "moment",
-		format:    "gg",
+		formatter: "strptime",
+		format:    "%tout",
 	}, t)
 
 }
