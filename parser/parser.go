@@ -144,8 +144,10 @@ func (formatter *DateFormatterString) Parse(dt time.Time, locale locales.Transla
 	for _, char := range *str {
 		if escapeSupport && char == escapeEndChar && escapeMode {
 			escapeMode = false
+			continue
 		} else if escapeSupport && char == escapeStartChar {
 			escapeMode = true
+			continue
 		}
 
 		if node, hasToken := tokenNode.children[char]; hasToken && !escapeMode {
