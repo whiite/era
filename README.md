@@ -22,8 +22,39 @@ Use `era help` to see available commands and flags otherwise here are some examp
 era now
 
 # Prints the current time as a unix timestamp
-era now --format unix
+era now --formatter unix
+
+# Prints the current date and time using Luxon and Moment formatting tokens in Tokyo
+era now --timezone Asia/Tokyo --formatter luxon "h:mm d/L/yyyy"
+era now --timezone Asia/Tokyo --formatter moment "h:mm D/M/Y"
+
+# Prints the availabe supported tokens and descriptions for the strptime/strftime formatter
+era tokens --formatter strptime
 ```
+
+## Supported Formatters
+
+More is planned to be added in the future as I come across them but these three
+I've found I've used the most.
+
+Correct escape sequences are supported for all
+
+**Note: Not every token is implemented yet. Most are however and are covered by tests**
+
+- [moment](https://momentjs.com)
+  - Fully implemented
+  - Some locale specific formats may return slightly different strings to the real moment
+- [luxon](https://moment.github.io/luxon/#/)
+  - Missing support for tokens:
+    - `ZZZZ` - full offset name e.g. `"Eastern Standard Time"`
+    - `TTTT` - Localised 24 hour time with full time zone name
+    - `f`, `ff`, `fff`, `ffff` - localised date and time
+    - `F`, `FF`, `FFF`, `FFFF` - localised date and time with seconds
+- [strptime (tokens used in a variety of languages including the `date` CLI)](https://linux.die.net/man/3/strptime)
+  - `%Ec`, `%EC`, `%Ex`, `%EX`, `%Ey`, `%EY` - alternative locale format strings
+  - `%Od`/`%Oe`, `%OH`, `%OI`, `%Om`, `%OM`, `%OS`, `%OU`, `%Ow`, `%OW`, `%Oy` - alternative locale format numerical
+- [go time format](https://pkg.go.dev/time) **(Currently missing token descriptions)**
+  - Full support as this CLI tool is written in Go
 
 ## Under consideration
 
