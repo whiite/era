@@ -3,6 +3,8 @@
 CLI tool for managing querying and manipulating date times written in
 [Go](https://go.dev)
 
+[Mirrored on GitHub at `whiite/era` (soon)](https://github.com/whiite/era) from [GitLab at `monokuro/era`](https://gitlab.com/monokuro/era)
+
 ## Install
 
 Currently not published to a Go registry (WIP) nor are there prebuilt binaries
