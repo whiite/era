@@ -50,11 +50,12 @@ Correct escape sequences are supported for all
     - `TTTT` - Localised 24 hour time with full time zone name
     - `f`, `ff`, `fff`, `ffff` - localised date and time
     - `F`, `FF`, `FFF`, `FFFF` - localised date and time with seconds
-- [strptime (tokens used in a variety of languages including the `date` CLI)](https://linux.die.net/man/3/strptime)
+- [strptime](https://linux.die.net/man/3/strptime) (tokens used in a variety of languages including the `date` CLI)
   - `%Ec`, `%EC`, `%Ex`, `%EX`, `%Ey`, `%EY` - alternative locale format strings
   - `%Od`/`%Oe`, `%OH`, `%OI`, `%Om`, `%OM`, `%OS`, `%OU`, `%Ow`, `%OW`, `%Oy` - alternative locale format numerical
-- [go time format](https://pkg.go.dev/time) **(Currently missing token descriptions)**
+- [go](https://pkg.go.dev/time) (time package format)
   - Full support as this CLI tool is written in Go
+  - Missing token descriptions for use with the `tokens` subcommand
 
 ## Under consideration
 
