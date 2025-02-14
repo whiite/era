@@ -24,7 +24,7 @@ era now
 # Prints the current time as a unix timestamp
 era now --formatter unix
 
-# Prints the current date and time using Luxon and Moment formatting tokens in Tokyo
+# Prints the current date and time using Luxon and Moment formatting tokens in Tokyo's time zone
 era now --timezone Asia/Tokyo --formatter luxon "h:mm d/L/yyyy"
 era now --timezone Asia/Tokyo --formatter moment "h:mm D/M/Y"
 
