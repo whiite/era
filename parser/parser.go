@@ -162,12 +162,14 @@ func (formatter *DateFormatterString) Parse(dt time.Time, locale locales.Transla
 			formattedDate.WriteString(tokens.String())
 		}
 		tokens.Reset()
-		formattedDate.WriteRune(char)
 
 		tokenNode = formatter.tokenGraph
 		if node, hasToken := formatter.tokenGraph.children[char]; hasToken && !escapeMode {
 			tokenNode = node
+			continue
 		}
+
+		formattedDate.WriteRune(char)
 	}
 
 	if formatFunc := tokenNode.value.expand; formatFunc != nil {
