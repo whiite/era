@@ -220,7 +220,7 @@ func TestFormatStringsLuxon(t *testing.T) {
 			}
 
 			for _, formatstr := range []string{
-				"[output:] DDDanGeROUS",
+				"'output: D'DDanGeROUS",
 				"'HH:mm' HH:mm",
 				"h:mmd/L/yyyy",
 			} {
