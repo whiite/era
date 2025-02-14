@@ -222,13 +222,14 @@ func TestFormatStringsLuxon(t *testing.T) {
 			for _, formatstr := range []string{
 				"[output:] DDDanGeROUS",
 				"'HH:mm' HH:mm",
+				"h:mmd/L/yyyy",
 			} {
 				t.Run("", func(t *testing.T) {
 					t.Parallel()
 					compareFormat(compareCtx{
 						dt:        dt.In(loc),
 						locale:    en_GB.New(),
-						formatter: "strptime",
+						formatter: "luxon",
 						format:    formatstr,
 					}, t)
 				})
