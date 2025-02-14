@@ -221,6 +221,7 @@ func TestFormatStringsLuxon(t *testing.T) {
 
 			for _, formatstr := range []string{
 				"[output:] DDDanGeROUS",
+				"'HH:mm' HH:mm",
 			} {
 				t.Run("", func(t *testing.T) {
 					t.Parallel()
