@@ -10,8 +10,7 @@ import (
 )
 
 // TODO: missing tokens:
-// - "Ec", "EC", "Ex", "EX", "Ey", "EY" - alternative locale format string
-// - "Od"/"Oe", "OH", "OI", "Om", "OM", "OS", "OU", "Ow", "OW", "Oy" - alternative locale format numerical
+// - "Ec" - locale specific date format
 
 // Formats date strings via the same system as `strptime`
 var Strptime = DateFormatterPrefix{
@@ -272,6 +271,114 @@ var Strptime = DateFormatterPrefix{
 			expand: func(dt time.Time, locale locales.Translator) string {
 				offsetName, _ := dt.Zone()
 				return offsetName
+			},
+		},
+		"EC": {
+			Desc: "Base year/period - (0-99)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return strconv.Itoa(dt.Year() / 100)
+			},
+		},
+		"Ex": {
+			Desc: "Short date format in the specified locale",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.FmtDateShort(dt)
+			},
+		},
+		"EX": {
+			Desc: "Time format in the specified locale",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return locale.FmtTimeMedium(dt)
+			},
+		},
+		"Ey": {
+			Desc: "Year to two digits - '97', '07'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%02d", dt.Year()%100)
+			},
+		},
+		"EY": {
+			Desc: "Alternative year number - '1997', '2007'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return strconv.Itoa(dt.Year())
+			},
+		},
+		"Od": {
+			Desc: "Day of the month using the locale's alternative numeric symbols, zero padded - (00-31)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%02d", dt.Day())
+			},
+		},
+		"Oe": {
+			Desc: "Day of the month using the locale's alternative numeric symbols, space padded - ( 0-31)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				fmtstr := " %d"
+				if dt.Day() > 9 {
+					fmtstr = fmtstr[1:]
+				}
+				return fmt.Sprintf(fmtstr, dt.Day())
+			},
+		},
+		"OH": {
+			Desc: "Hour in 24 hour format using the locale's alternative numeric symbols, zero padded - (00-23)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%02d", dt.Hour())
+			},
+		},
+		"OI": {
+			Desc: "Hour in 12 hour format using the locale's alternative numeric symbols, zero padded - (00-12)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				hour := dt.Hour() % 12
+				if hour == 0 {
+					hour = 12
+				}
+				return fmt.Sprintf("%02d", hour)
+			},
+		},
+		"Om": {
+			Desc: "Month number using the locale's alternative numeric symbols, zero padded (01-12)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%02d", dt.Month())
+			},
+		},
+		"OM": {
+			Desc:   "Minutes using the locale's alternative numeric symbols, zero padded (00-59)",
+			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Minute()) },
+		},
+		"OS": {
+			Desc:   "Seconds using the locale's alternative numeric symbols, zero padded (00-60; 60 may occur for for leap seconds)",
+			expand: func(dt time.Time, locale locales.Translator) string { return fmt.Sprintf("%02d", dt.Second()) },
+		},
+		"OU": {
+			Desc: "Week number of the year using the locale's alternative numeric symbols where the first Sunday of January is considered week 1 - (00-53)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				midnight := dateutils.DayStart(dt)
+				jan1st := dateutils.YearStart(midnight)
+
+				firstSundayJan := dateutils.NextWeekday(time.Sunday, jan1st)
+				weekDiff := int((midnight.Sub(firstSundayJan).Hours() / 24 / 7) + 1)
+				return fmt.Sprintf("%02d", weekDiff)
+			},
+		},
+		"Ow": {
+			Desc:   "Day of week number (0-6) using the locale's alternative numeric symbols where Sunday is 0 and Saturday is 6",
+			expand: func(dt time.Time, locale locales.Translator) string { return strconv.Itoa(int(dt.Weekday())) },
+		},
+		"OW": {
+			Desc: "Week number of the year using the locale's alternative numeric symbols where the first Monday of January is considered week 1 - (00-53)",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				midnight := dateutils.DayStart(dt)
+				jan1st := dateutils.YearStart(midnight)
+
+				firstSundayJan := dateutils.NextWeekday(time.Monday, jan1st)
+				weekDiff := int((midnight.Sub(firstSundayJan).Hours() / 24 / 7) + 1)
+				return fmt.Sprintf("%02d", weekDiff)
+			},
+		},
+		"Oy": {
+			Desc: "Year number offset from the century using the locale's alternative numeric symbols - '99', '07'",
+			expand: func(dt time.Time, locale locales.Translator) string {
+				return fmt.Sprintf("%02d", dt.Year()%100)
 			},
 		},
 	},
