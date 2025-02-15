@@ -1,7 +1,7 @@
 package main
 
 import (
-	"monokuro/era/cmd"
+	"gitlab.com/monokuro/era/cmd"
 )
 
 //go:generate go run gen.go

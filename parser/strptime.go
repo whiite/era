@@ -2,7 +2,7 @@ package parser
 
 import (
 	"fmt"
-	"monokuro/era/dateutils"
+	"gitlab.com/monokuro/era/dateutils"
 	"strconv"
 	"time"
 

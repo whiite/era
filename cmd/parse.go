@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"monokuro/era/localiser"
+	"gitlab.com/monokuro/era/localiser"
 	"strconv"
 	"strings"
 	"time"
