@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"monokuro/era/localiser"
-	"monokuro/era/parser"
+	"gitlab.com/monokuro/era/localiser"
+	"gitlab.com/monokuro/era/parser"
 	"strconv"
 	"strings"
 	"time"

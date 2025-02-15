@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"monokuro/era/parser"
+	"gitlab.com/monokuro/era/parser"
 	"os/exec"
 	"strings"
 	"testing"
