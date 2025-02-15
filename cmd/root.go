@@ -9,7 +9,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:     "era",
-	Version: "0.1.0",
+	Version: "0.1.1",
 	Short:   "Simple utility for working with time and dates",
 	Long:    `A simple and intuitve tool for working with and manipulating time and dates`,
 	Run: func(cmd *cobra.Command, args []string) {
