@@ -7,12 +7,12 @@ CLI tool for managing querying and manipulating date times written in
 
 ## Install
 
-Currently not published to a Go registry (WIP) nor are there prebuilt binaries
-so instead clone the repo and install using the following:
+Installation currently requires you have `go` installed on your system
+
+To install:
 
 ```bash
-cd era
-go install .
+go installgitlab.com/monokuro/era@v0.1.0
 ```
 
 ## Usage
