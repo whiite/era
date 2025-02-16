@@ -19,7 +19,7 @@ func init() {
 	parseCmd.Flags().StringVarP(&Format, "format", "f", "", "Format to display the datetime with")
 	parseCmd.Flags().StringVarP(&Parser, "formatter", "F", "", "Formatter to interpret and display the supplied datetime with")
 	parseCmd.Flags().StringVarP(&TimeZone, "timezone", "t", "", "Time zone to set the time to")
-	parseCmd.Flags().StringVarP(&Locale, "Locale", "l", "", "Locale to use in formatting")
+	parseCmd.Flags().StringVarP(&Locale, "locale", "l", "", "Locale to use in formatting")
 	rootCmd.AddCommand(parseCmd)
 }
 
