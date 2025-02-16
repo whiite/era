@@ -27,7 +27,7 @@ var Locale string
 func init() {
 	nowCmd.Flags().StringVarP(&Format, "formatter", "F", "", "Formatter to interpret and display the current datetime with")
 	nowCmd.Flags().StringVarP(&TimeZone, "timezone", "t", "", "Time zone to set the time to")
-	nowCmd.Flags().StringVarP(&Locale, "Locale", "l", "", "Locale to use in formatting")
+	nowCmd.Flags().StringVarP(&Locale, "locale", "l", "", "Locale to use in formatting")
 	rootCmd.AddCommand(nowCmd)
 }
 
