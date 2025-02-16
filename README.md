@@ -12,7 +12,7 @@ Installation currently requires you have `go` installed on your system
 To install:
 
 ```bash
-go installgitlab.com/monokuro/era@latest
+go install gitlab.com/monokuro/era@latest
 ```
 
 ## Usage
