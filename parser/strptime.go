@@ -9,9 +9,6 @@ import (
 	"github.com/go-playground/locales"
 )
 
-// TODO: missing tokens:
-// - "Ec" - locale specific date format
-
 // Formats date strings via the same system as `strptime`
 var Strptime = DateFormatterPrefix{
 	Prefix: '%',
@@ -272,6 +269,10 @@ var Strptime = DateFormatterPrefix{
 				offsetName, _ := dt.Zone()
 				return offsetName
 			},
+		},
+		"Ec": {
+			Desc:   "Alternative representation for date and time for the current locale (hardcoded to UK format currently)",
+			expand: func(dt time.Time, locale locales.Translator) string { return dt.Format("Mon _2 Jan 15:04:05 2006") },
 		},
 		"EC": {
 			Desc: "Base year/period - (0-99)",
