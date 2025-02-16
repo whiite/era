@@ -12,7 +12,7 @@ Installation currently requires you have `go` installed on your system
 To install:
 
 ```bash
-go installgitlab.com/monokuro/era@v0.1.0
+go installgitlab.com/monokuro/era@v0.1.1
 ```
 
 ## Usage
@@ -41,7 +41,8 @@ I've found I've used the most.
 
 Correct escape sequences are supported for all
 
-**Note: Not every token is implemented yet. Most are however and are covered by tests**
+**Note: Not every token is implemented fully yet. Most work as intended; some locale
+specific formats are hardcoded to the UK or English versions but all are covered by tests**
 
 - [moment](https://momentjs.com)
   - Fully implemented
@@ -53,8 +54,7 @@ Correct escape sequences are supported for all
     - `f`, `ff`, `fff`, `ffff` - localised date and time
     - `F`, `FF`, `FFF`, `FFFF` - localised date and time with seconds
 - [strptime](https://linux.die.net/man/3/strptime) (tokens used in a variety of languages including the `date` CLI)
-  - `%Ec`, `%EC`, `%Ex`, `%EX`, `%Ey`, `%EY` - alternative locale format strings
-  - `%Od`/`%Oe`, `%OH`, `%OI`, `%Om`, `%OM`, `%OS`, `%OU`, `%Ow`, `%OW`, `%Oy` - alternative locale format numerical
+  - `%Ec`, `%c` - date and time format (currently hardcoded to the UK representation)
 - [go](https://pkg.go.dev/time) (time package format)
   - Full support as this CLI tool is written in Go
   - Missing token descriptions for use with the `tokens` subcommand
