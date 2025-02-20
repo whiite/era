@@ -15,7 +15,7 @@ import (
 // - "f", "ff", "fff", "ffff" - localised date and time
 // - "F", "FF", "FFF", "FFFF" - localised date and time with seconds
 
-// Formats date strings via the same system as `strptime`
+// Formats date strings via the same system as `strftime`
 var Luxon = DateFormatterString{
 	escapeChars: []rune{'\''},
 	tokenMap: map[string]FormatToken[string]{

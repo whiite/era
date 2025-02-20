@@ -9,8 +9,8 @@ import (
 	"github.com/go-playground/locales"
 )
 
-// Formats date strings via the same system as `strptime`
-var Strptime = DateFormatterPrefix{
+// Formats date strings via the same system as `strftime`
+var Strftime = DateFormatterPrefix{
 	Prefix: '%',
 	tokenMap: map[string]FormatToken[string]{
 		"%": {
