@@ -24,6 +24,31 @@ type DateFormatter interface {
 	Parse(dt time.Time, locale locales.Translator, str *string) string
 }
 
+type DateFormatterWrapper struct {
+	format   func(dt time.Time, formatStr string) string
+	tokenMap map[string]FormatToken[string]
+}
+
+func (formatter DateFormatterWrapper) Parse(dt time.Time, locale locales.Translator, str *string) string {
+	return formatter.format(dt, *str)
+}
+
+func (formatter DateFormatterWrapper) TokenDesc() string {
+	var output strings.Builder
+	for _, tokenChar := range slices.Sorted(maps.Keys(formatter.tokenMap)) {
+		tokenDef := formatter.tokenMap[tokenChar]
+		output.WriteString(fmt.Sprintf("%s: %s\n", tokenChar, tokenDef.Desc))
+		if len(tokenDef.aliases) > 0 {
+			output.WriteString("  aliases:")
+			for _, alias := range tokenDef.aliases {
+				output.WriteString(fmt.Sprintf(" %s", alias))
+			}
+			output.WriteString("\n")
+		}
+	}
+	return output.String()
+}
+
 type DateFormatterPrefix struct {
 	Prefix     rune
 	tokenMap   map[string]FormatToken[string]
