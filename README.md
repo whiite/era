@@ -57,7 +57,6 @@ specific formats are hardcoded to the UK or English versions but all are covered
   - `%Ec`, `%c` - date and time format (currently hardcoded to the UK representation)
 - [go](https://pkg.go.dev/time) (time package format)
   - Full support as this CLI tool is written in Go
-  - Missing token descriptions for use with the `tokens` subcommand
 
 ## Under consideration
 
