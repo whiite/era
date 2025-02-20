@@ -80,8 +80,10 @@ func FormatTime(dt time.Time, locale locales.Translator, formatter string, parse
 		formattedTime = dt.Format(time.RFC3339)
 	case "iso", "iso8601":
 		formattedTime = dt.Format("2006-01-02T15:04:05.999Z07:00")
-	case "go", "":
+	case "go":
 		formattedTime = parser.Go.Parse(dt, locale, &parseStr)
+	case "":
+		formattedTime = dt.String()
 	case "moment", "momentjs":
 		if len(parseStr) == 0 {
 			return formattedTime, fmt.Errorf("No format string provided")
@@ -98,7 +100,7 @@ func FormatTime(dt time.Time, locale locales.Translator, formatter string, parse
 		}
 		formattedTime = parser.Strptime.Parse(dt, locale, &parseStr)
 	default:
-		return formattedTime, fmt.Errorf("'%s' is not a supported format", parseStr)
+		return formattedTime, fmt.Errorf("'%s' is not a supported formattter", parseStr)
 	}
 
 	return formattedTime, nil
