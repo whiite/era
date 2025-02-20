@@ -25,6 +25,8 @@ var tokensCmd = &cobra.Command{
 			selectedParser = &parser.Luxon
 		case "strptime":
 			selectedParser = &parser.Strptime
+		case "go":
+			selectedParser = &parser.Go
 		default:
 			return fmt.Errorf("No parser specified")
 		}
