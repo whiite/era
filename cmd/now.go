@@ -100,7 +100,7 @@ func FormatTime(dt time.Time, locale locales.Translator, formatter string, parse
 		}
 		formattedTime = parser.Strftime.Parse(dt, locale, &parseStr)
 	default:
-		return formattedTime, fmt.Errorf("'%s' is not a supported formattter", parseStr)
+		return formattedTime, fmt.Errorf("'%s' is not a supported formatter", formatter)
 	}
 
 	return formattedTime, nil
