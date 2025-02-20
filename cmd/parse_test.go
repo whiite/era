@@ -12,6 +12,7 @@ import (
 	"github.com/go-playground/locales/en_GB"
 )
 
+// TODO: use env var `LC_ALL` to set the locale
 func execDate(format string, dt time.Time, t *testing.T) string {
 	cmd := exec.Command("date", "-r", fmt.Sprintf("%d", dt.Unix()), fmt.Sprintf("+%s", format))
 	cmd.Env = append(cmd.Environ(), fmt.Sprintf("TZ=%s", dt.Location()))
@@ -88,8 +89,8 @@ wanted: '%s'`, ctx.formatter, ctx.format, ctx.dt.Location().String(), ctx.dt.Str
 
 var testDates = []string{"2024-01-07", "1997-01-04", "1989-12-31", "2007-01-01"}
 
-func TestTokensStrptime(t *testing.T) {
-	tokens := parser.Strptime.TokenMapExpanded()
+func TestTokensStrftime(t *testing.T) {
+	tokens := parser.Strftime.TokenMapExpanded()
 
 	for _, datestr := range testDates {
 		dt, _ := time.Parse(time.DateOnly, datestr)
@@ -107,7 +108,7 @@ func TestTokensStrptime(t *testing.T) {
 					compareFormat(compareCtx{
 						dt:        dt.In(loc),
 						locale:    en_GB.New(),
-						formatter: "strptime",
+						formatter: "strftime",
 						format:    format,
 					}, t)
 				})
@@ -178,7 +179,7 @@ func TestTokensMoment(t *testing.T) {
 
 }
 
-func TestFormatStringsStrptime(t *testing.T) {
+func TestFormatStringsStrftime(t *testing.T) {
 	for _, datestr := range testDates {
 		dt, _ := time.Parse(time.DateOnly, datestr)
 		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
@@ -199,7 +200,7 @@ func TestFormatStringsStrptime(t *testing.T) {
 					compareFormat(compareCtx{
 						dt:        dt.In(loc),
 						locale:    en_GB.New(),
-						formatter: "strptime",
+						formatter: "strftime",
 						format:    formatstr,
 					}, t)
 				})
@@ -252,7 +253,7 @@ func TestScenario(t *testing.T) {
 	compareFormat(compareCtx{
 		dt:        dt.In(loc),
 		locale:    en_GB.New(),
-		formatter: "strptime",
+		formatter: "strftime",
 		format:    "%tout",
 	}, t)
 

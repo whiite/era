@@ -31,7 +31,7 @@ era now --timezone Asia/Tokyo --formatter luxon "h:mm d/L/yyyy"
 era now --timezone Asia/Tokyo --formatter moment "h:mm D/M/Y"
 
 # Prints the availabe supported tokens and descriptions for the strptime/strftime formatter
-era tokens --formatter strptime
+era tokens --formatter strftime
 ```
 
 ## Supported Formatters
@@ -53,7 +53,7 @@ specific formats are hardcoded to the UK or English versions but all are covered
     - `TTTT` - Localised 24 hour time with full time zone name
     - `f`, `ff`, `fff`, `ffff` - localised date and time
     - `F`, `FF`, `FFF`, `FFFF` - localised date and time with seconds
-- [strptime](https://linux.die.net/man/3/strptime) (tokens used in a variety of languages including the `date` CLI)
+- [strftime](https://linux.die.net/man/3/strftime) (tokens used in a variety of languages including the `date` CLI)
   - `%Ec`, `%c` - date and time format (currently hardcoded to the UK representation)
 - [go](https://pkg.go.dev/time) (time package format)
   - Full support as this CLI tool is written in Go

@@ -23,8 +23,8 @@ var tokensCmd = &cobra.Command{
 			selectedParser = &parser.MomentJs
 		case "luxon":
 			selectedParser = &parser.Luxon
-		case "strptime":
-			selectedParser = &parser.Strptime
+		case "strftime":
+			selectedParser = &parser.Strftime
 		case "go":
 			selectedParser = &parser.Go
 		default:
