@@ -81,24 +81,24 @@ func FormatTime(dt time.Time, locale locales.Translator, formatter string, parse
 	case "iso", "iso8601":
 		formattedTime = dt.Format("2006-01-02T15:04:05.999Z07:00")
 	case "go":
-		formattedTime = parser.Go.Parse(dt, locale, &parseStr)
+		formattedTime = parser.Go.Format(dt, locale, &parseStr)
 	case "":
 		formattedTime = dt.String()
 	case "moment", "momentjs":
 		if len(parseStr) == 0 {
 			return formattedTime, fmt.Errorf("No format string provided")
 		}
-		formattedTime = parser.MomentJs.Parse(dt, locale, &parseStr)
+		formattedTime = parser.MomentJs.Format(dt, locale, &parseStr)
 	case "luxon":
 		if len(parseStr) == 0 {
 			return formattedTime, fmt.Errorf("No format string provided")
 		}
-		formattedTime = parser.Luxon.Parse(dt, locale, &parseStr)
+		formattedTime = parser.Luxon.Format(dt, locale, &parseStr)
 	case "strftime":
 		if len(parseStr) == 0 {
 			return formattedTime, fmt.Errorf("No format string provided")
 		}
-		formattedTime = parser.Strftime.Parse(dt, locale, &parseStr)
+		formattedTime = parser.Strftime.Format(dt, locale, &parseStr)
 	default:
 		return formattedTime, fmt.Errorf("'%s' is not a supported formatter", formatter)
 	}

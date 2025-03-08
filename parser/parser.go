@@ -21,7 +21,7 @@ type FormatToken[T any] struct {
 
 type DateFormatter interface {
 	TokenDesc() string
-	Parse(dt time.Time, locale locales.Translator, str *string) string
+	Format(dt time.Time, locale locales.Translator, str *string) string
 }
 
 type DateFormatterWrapper struct {
@@ -29,7 +29,7 @@ type DateFormatterWrapper struct {
 	tokenMap map[string]FormatToken[string]
 }
 
-func (formatter DateFormatterWrapper) Parse(dt time.Time, locale locales.Translator, str *string) string {
+func (formatter DateFormatterWrapper) Format(dt time.Time, locale locales.Translator, str *string) string {
 	return formatter.format(dt, *str)
 }
 
@@ -55,7 +55,7 @@ type DateFormatterPrefix struct {
 	tokenGraph *TokenGraphNode[FormatToken[string]]
 }
 
-func (formatter DateFormatterPrefix) Parse(dt time.Time, locale locales.Translator, str *string) string {
+func (formatter DateFormatterPrefix) Format(dt time.Time, locale locales.Translator, str *string) string {
 	var formattedDate strings.Builder
 	var tokens strings.Builder
 
@@ -143,7 +143,7 @@ type DateFormatterString struct {
 	tokenGraph  *TokenGraphNode[FormatToken[string]]
 }
 
-func (formatter *DateFormatterString) Parse(dt time.Time, locale locales.Translator, str *string) string {
+func (formatter *DateFormatterString) Format(dt time.Time, locale locales.Translator, str *string) string {
 	var formattedDate strings.Builder
 	var tokens strings.Builder
 
