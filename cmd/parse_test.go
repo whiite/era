@@ -12,10 +12,10 @@ import (
 	"github.com/go-playground/locales/en_GB"
 )
 
-// TODO: use env var `LC_ALL` to set the locale
-func execDate(format string, dt time.Time, t *testing.T) string {
-	cmd := exec.Command("date", "-r", fmt.Sprintf("%d", dt.Unix()), fmt.Sprintf("+%s", format))
-	cmd.Env = append(cmd.Environ(), fmt.Sprintf("TZ=%s", dt.Location()))
+func execDate(ctx compareCtx, t *testing.T) string {
+	cmd := exec.Command("date", "-r", fmt.Sprintf("%d", ctx.dt.Unix()), fmt.Sprintf("+%s", ctx.format))
+	cmd.Env = append(cmd.Environ(), fmt.Sprintf("TZ=%s", ctx.dt.Location()))
+	cmd.Env = append(cmd.Environ(), fmt.Sprintf("LC_ALL=%s", ctx.locale.Locale()))
 	var out strings.Builder
 	cmd.Stdout = &out
 	err := cmd.Run()
@@ -28,8 +28,8 @@ func execDate(format string, dt time.Time, t *testing.T) string {
 	return output[:len(output)-1]
 }
 
-func execLuxon(format string, dt time.Time, t *testing.T) string {
-	evalStr := fmt.Sprintf("(await import('npm:luxon')).DateTime.fromSeconds(%d).setZone(%q).toFormat(%q)", dt.Unix(), dt.Location(), format)
+func execLuxon(ctx compareCtx, t *testing.T) string {
+	evalStr := fmt.Sprintf("(await import('npm:luxon')).DateTime.fromSeconds(%d).setZone(%q).toFormat(%q)", ctx.dt.Unix(), ctx.dt.Location(), ctx.format)
 	cmd := exec.Command("deno", "eval", "-p", evalStr)
 	var out strings.Builder
 	cmd.Stdout = &out
@@ -43,8 +43,8 @@ func execLuxon(format string, dt time.Time, t *testing.T) string {
 	return output[:len(output)-1]
 }
 
-func execMoment(format string, dt time.Time, t *testing.T) string {
-	evalStr := fmt.Sprintf("(await import('npm:moment-timezone')).default.tz(%d, %q).format(%q)", dt.UnixMilli(), dt.Location(), format)
+func execMoment(ctx compareCtx, t *testing.T) string {
+	evalStr := fmt.Sprintf("(await import('npm:moment-timezone')).default.tz(%d, %q).format(%q)", ctx.dt.UnixMilli(), ctx.dt.Location(), ctx.format)
 	cmd := exec.Command("deno", "eval", "-p", evalStr)
 	var out strings.Builder
 	cmd.Stdout = &out
@@ -65,6 +65,24 @@ type compareCtx struct {
 	format    string
 }
 
+func (ctx *compareCtx) Error(got, want string) string {
+	return fmt.Sprintf(`Formatter: '%s' did not match format string: '%s'
+location: '%s'
+date:     '%s' | %d
+locale:   '%s'
+
+got:    '%s'
+wanted: '%s'`,
+		ctx.formatter,
+		ctx.format,
+		ctx.dt.Location().String(),
+		ctx.dt.String(),
+		ctx.dt.Unix(),
+		ctx.locale.Locale(),
+		got,
+		want)
+}
+
 func compareFormat(ctx compareCtx, t *testing.T) {
 	got, err := FormatTime(ctx.dt, ctx.locale, ctx.formatter, ctx.format)
 	if err != nil {
@@ -76,14 +94,9 @@ func compareFormat(ctx compareCtx, t *testing.T) {
 	} else if ctx.formatter == "moment" {
 		execCmd = execMoment
 	}
-	want := execCmd(ctx.format, ctx.dt, t)
+	want := execCmd(ctx, t)
 	if got != want {
-		t.Errorf(`Formatter: '%s' did not match format string: '%s'
-location: '%s'
-date:     '%s' | %d
-
-got:    '%s'
-wanted: '%s'`, ctx.formatter, ctx.format, ctx.dt.Location().String(), ctx.dt.String(), ctx.dt.Unix(), got, want)
+		t.Error(ctx.Error(got, want))
 	}
 }
 
