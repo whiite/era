@@ -85,7 +85,7 @@ func Parse(localeStr string) (locales.Translator, error) {
 		selectedLocale = {{ printf "%s" .Name }}.New()
 	{{- end }}
 	default:
-		err = fmt.Errorf("Unsupported locale: '%s'", localeStr)
+		err = fmt.Errorf("Unsupported locale: %q", localeStr)
 	}
 
 	return selectedLocale, err

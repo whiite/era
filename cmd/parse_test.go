@@ -20,7 +20,7 @@ func execDate(ctx compareCtx, t *testing.T) string {
 	cmd.Stdout = &out
 	err := cmd.Run()
 	if err != nil {
-		t.Errorf("Could not run '%s': %s", cmd.Path, err)
+		t.Errorf("Could not run %q: %s", cmd.Path, err)
 	}
 	output := out.String()
 	// Remove newline char appended to the end of stdout
@@ -35,7 +35,7 @@ func execLuxon(ctx compareCtx, t *testing.T) string {
 	cmd.Stdout = &out
 	err := cmd.Run()
 	if err != nil {
-		t.Errorf("Could not run '%s': %s", cmd.Path, err)
+		t.Errorf("Could not run %q: %s", cmd.Path, err)
 	}
 	output := out.String()
 	// Remove newline char appended to the end of stdout
@@ -50,7 +50,7 @@ func execMoment(ctx compareCtx, t *testing.T) string {
 	cmd.Stdout = &out
 	err := cmd.Run()
 	if err != nil {
-		t.Errorf("Could not run '%s': %s", cmd.Path, err)
+		t.Errorf("Could not run %q: %s", cmd.Path, err)
 	}
 	output := out.String()
 	// Remove newline char appended to the end of stdout
@@ -66,13 +66,13 @@ type compareCtx struct {
 }
 
 func (ctx *compareCtx) Error(got, want string) string {
-	return fmt.Sprintf(`Formatter: '%s' did not match format string: '%s'
-location: '%s'
-date:     '%s' | %d
-locale:   '%s'
+	return fmt.Sprintf(`Formatter: %q did not match format string: %q
+location: %q
+date:     %q | %d
+locale:   %q
 
-got:    '%s'
-wanted: '%s'`,
+got:    %q
+wanted: %q`,
 		ctx.formatter,
 		ctx.format,
 		ctx.dt.Location().String(),
@@ -110,7 +110,7 @@ func TestTokensStrftime(t *testing.T) {
 		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
 			loc, err := time.LoadLocation(loc)
 			if err != nil {
-				t.Errorf("Location '%s' is unsupported: %s", loc, err)
+				t.Errorf("Location %q is unsupported: %s", loc, err)
 				break
 			}
 
@@ -141,7 +141,7 @@ func TestTokensLuxon(t *testing.T) {
 		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
 			loc, err := time.LoadLocation(loc)
 			if err != nil {
-				t.Errorf("Location '%s' is unsupported: %s", loc, err)
+				t.Errorf("Location %q is unsupported: %s", loc, err)
 				break
 			}
 
@@ -172,7 +172,7 @@ func TestTokensMoment(t *testing.T) {
 		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
 			loc, err := time.LoadLocation(loc)
 			if err != nil {
-				t.Errorf("Location '%s' is unsupported: %s", loc, err)
+				t.Errorf("Location %q is unsupported: %s", loc, err)
 				break
 			}
 
@@ -198,7 +198,7 @@ func TestFormatStringsStrftime(t *testing.T) {
 		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
 			loc, err := time.LoadLocation(loc)
 			if err != nil {
-				t.Errorf("Location '%s' is unsupported: %s", loc, err)
+				t.Errorf("Location %q is unsupported: %s", loc, err)
 				break
 			}
 
@@ -229,7 +229,7 @@ func TestFormatStringsLuxon(t *testing.T) {
 		for _, loc := range []string{"America/Los_Angeles", "Europe/London", "Europe/Paris"} {
 			loc, err := time.LoadLocation(loc)
 			if err != nil {
-				t.Errorf("Location '%s' is unsupported: %s", loc, err)
+				t.Errorf("Location %q is unsupported: %s", loc, err)
 				break
 			}
 
@@ -259,7 +259,7 @@ func TestScenario(t *testing.T) {
 	// loc, err := time.LoadLocation("America/Los_Angeles")
 	loc, err := time.LoadLocation("Europe/London")
 	if err != nil {
-		t.Errorf("Location '%s' is unsupported: %s", loc, err)
+		t.Errorf("Location %q is unsupported: %s", loc, err)
 		return
 	}
 

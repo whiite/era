@@ -55,19 +55,19 @@ var parseCmd = &cobra.Command{
 		case "unix", "timestamp", "ts":
 			unixVal, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
-				return fmt.Errorf("Unable to parse '%s' as a unix timestamp", args[0])
+				return fmt.Errorf("Unable to parse %q as a unix timestamp", args[0])
 			}
 			dt = time.Unix(unixVal, 0).In(location)
 		case "rfc", "rfc3339":
 			time, err := time.Parse(time.RFC3339, args[0])
 			if err != nil {
-				return fmt.Errorf("Unable to parse '%s' as an RFC3339 string", args[0])
+				return fmt.Errorf("Unable to parse %q as an RFC3339 string", args[0])
 			}
 			dt = time.In(location)
 		case "iso", "iso8601":
 			time, err := time.Parse("2006-01-02T15:04:05.999Z07:00", args[0])
 			if err != nil {
-				return fmt.Errorf("Unable to parse '%s' as an ISO8601 string", args[0])
+				return fmt.Errorf("Unable to parse %q as an ISO8601 string", args[0])
 			}
 			dt = time.In(location)
 		case "go", "":
@@ -77,7 +77,7 @@ var parseCmd = &cobra.Command{
 			}
 			time, err := time.Parse(formatStr, args[0])
 			if err != nil {
-				return fmt.Errorf("Unable to parse '%s' as a Go format string", args[0])
+				return fmt.Errorf("Unable to parse %q as a Go format string", args[0])
 			}
 			dt = time.In(location)
 		case "strptime":
@@ -86,11 +86,11 @@ var parseCmd = &cobra.Command{
 			}
 			time, err := parser.Strftime.Parse(&args[0], &args[1])
 			if err != nil {
-				return fmt.Errorf("Failed to parse '%s' via the strptime parser", args[0])
+				return fmt.Errorf("Failed to parse %q via the strptime parser", args[0])
 			}
 			dt = time.In(location)
 		default:
-			return fmt.Errorf("'%s' is not a supported parser", Parser)
+			return fmt.Errorf("%q is not a supported parser", Parser)
 		}
 
 		formattedTime, err := FormatTime(dt, locale, Parser, Format)
