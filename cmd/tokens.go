@@ -27,8 +27,10 @@ var tokensCmd = &cobra.Command{
 			selectedParser = &parser.Strftime
 		case "go":
 			selectedParser = &parser.Go
-		default:
+		case "":
 			return fmt.Errorf("No parser specified")
+		default:
+			return fmt.Errorf("Parser %q is not supported", Parser)
 		}
 		fmt.Print(selectedParser.TokenDesc())
 		return nil
