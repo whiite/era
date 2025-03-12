@@ -81,6 +81,9 @@ func FormatTime(dt time.Time, locale locales.Translator, formatter string, parse
 	case "iso", "iso8601":
 		formattedTime = dt.Format("2006-01-02T15:04:05.999Z07:00")
 	case "go":
+		if len(parseStr) == 0 {
+			parseStr = "2006-01-02 15:04:05.999999999 -0700 MST"
+		}
 		formattedTime = parser.Go.Format(dt, locale, &parseStr)
 	case "":
 		formattedTime = dt.String()
