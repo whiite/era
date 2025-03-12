@@ -71,7 +71,11 @@ var parseCmd = &cobra.Command{
 			}
 			dt = time.In(location)
 		case "go", "":
-			time, err := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", args[0])
+			formatStr := "2006-01-02 15:04:05.999999999 -0700 MST"
+			if len(args) > 1 {
+				formatStr = args[1]
+			}
+			time, err := time.Parse(formatStr, args[0])
 			if err != nil {
 				return fmt.Errorf("Unable to parse '%s' as a Go format string", args[0])
 			}
