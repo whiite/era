@@ -2,11 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"gitlab.com/monokuro/era/localiser"
 	"strconv"
 	"strings"
 	"time"
 	_ "time/tzdata"
+
+	"gitlab.com/monokuro/era/localiser"
+	"gitlab.com/monokuro/era/parser"
 
 	"github.com/go-playground/locales/en_GB"
 	"github.com/spf13/cobra"
@@ -27,7 +29,7 @@ var parseCmd = &cobra.Command{
 	Use:   "parse",
 	Short: "Parse a given time",
 	Long:  "Parse a given time in order to manipulate; convert or output it in a different format",
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.RangeArgs(1, 2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		location := time.Now().Local().Location()
 		locale := en_GB.New()
@@ -71,19 +73,23 @@ var parseCmd = &cobra.Command{
 		case "go", "":
 			time, err := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", args[0])
 			if err != nil {
-				return fmt.Errorf("Unable to parse '%s' as a Go formtat string", args[0])
+				return fmt.Errorf("Unable to parse '%s' as a Go format string", args[0])
+			}
+			dt = time.In(location)
+		case "strptime":
+			if len(args) == 1 {
+				return fmt.Errorf("Missing specified format argument")
+			}
+			time, err := parser.Strftime.Parse(&args[0], &args[1])
+			if err != nil {
+				return fmt.Errorf("Failed to parse '%s' via the strptime parser", args[0])
 			}
 			dt = time.In(location)
 		default:
 			return fmt.Errorf("'%s' is not a supported parser", Parser)
 		}
 
-		parseStr := ""
-		if len(args) > 0 {
-			parseStr = args[0]
-		}
-
-		formattedTime, err := FormatTime(dt, locale, Format, parseStr)
+		formattedTime, err := FormatTime(dt, locale, Parser, Format)
 		if err != nil {
 			return err
 		}

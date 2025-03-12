@@ -132,7 +132,7 @@ func TestTokensStrftime(t *testing.T) {
 }
 
 func TestTokensLuxon(t *testing.T) {
-	tokens := parser.Luxon.TokenMapExpanded()
+	tokens := parser.Luxon.TokenMap()
 	// NOTE: tokens known to be problematic but fixing is difficult
 	excludeList := map[string]bool{"DDDD": true, "ttt": true, "tttt": true, "ZZZZ": true, "TTT": true}
 
@@ -165,7 +165,7 @@ func TestTokensLuxon(t *testing.T) {
 }
 
 func TestTokensMoment(t *testing.T) {
-	tokens := parser.MomentJs.TokenMapExpanded()
+	tokens := parser.MomentJs.TokenMap()
 
 	for _, datestr := range testDates {
 		dt, _ := time.Parse(time.DateOnly, datestr)
