@@ -8,7 +8,7 @@ var Go = DateFormatterWrapper{
 	format: func(dt time.Time, formatStr string) string {
 		return dt.Format(formatStr)
 	},
-	tokenMap: map[string]FormatToken[string]{
+	tokenDef: map[string]FormatToken[string]{
 		"1": {
 			Desc: "Month number (1-12)",
 		},
