@@ -78,4 +78,5 @@ var CStr = DateFormatterWrapper{
 		dt := tmToTime(&tm, time.Local)
 		return dt, nil
 	},
+	tokenDef: Strftime.tokenDef,
 }
