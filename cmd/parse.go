@@ -80,7 +80,7 @@ var parseCmd = &cobra.Command{
 				return fmt.Errorf("Unable to parse %q as a Go format string", args[0])
 			}
 			dt = time.In(location)
-		case "strptime":
+		case "go:strftime", "go:strptime":
 			if len(args) == 1 {
 				return fmt.Errorf("Missing specified format argument")
 			}
@@ -89,7 +89,7 @@ var parseCmd = &cobra.Command{
 				return fmt.Errorf("Failed to parse %q via the strptime parser", args[0])
 			}
 			dt = time.In(location)
-		case "c":
+		case "c", "strftime", "strptime":
 			if len(args) == 1 {
 				return fmt.Errorf("Missing specified format argument")
 			}

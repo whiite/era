@@ -85,8 +85,6 @@ func FormatTime(dt time.Time, locale locales.Translator, formatter string, parse
 			parseStr = "2006-01-02 15:04:05.999999999 -0700 MST"
 		}
 		formattedTime = parser.Go.Format(dt, locale, &parseStr)
-	case "":
-		formattedTime = dt.String()
 	case "moment", "momentjs":
 		if len(parseStr) == 0 {
 			return formattedTime, fmt.Errorf("No format string provided")
@@ -97,13 +95,15 @@ func FormatTime(dt time.Time, locale locales.Translator, formatter string, parse
 			return formattedTime, fmt.Errorf("No format string provided")
 		}
 		formattedTime = parser.Luxon.Format(dt, locale, &parseStr)
-	case "strftime":
+	case "go:strftime", "go:strptime":
 		if len(parseStr) == 0 {
 			return formattedTime, fmt.Errorf("No format string provided")
 		}
 		formattedTime = parser.Strftime.Format(dt, locale, &parseStr)
-	case "c":
+	case "c", "strftime", "strptime":
 		formattedTime = parser.CStr.Format(dt, locale, &parseStr)
+	case "":
+		formattedTime = dt.String()
 	default:
 		return formattedTime, fmt.Errorf("%q is not a supported formatter", formatter)
 	}
