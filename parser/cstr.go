@@ -9,12 +9,16 @@ package parser
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <locale.h>
 */
 import "C"
 
 import (
+	"fmt"
 	"time"
 	"unsafe"
+
+	"github.com/go-playground/locales"
 )
 
 func tmToTime(tm *C.struct_tm, location *time.Location) time.Time {
@@ -62,13 +66,18 @@ func timeToTm(dt *time.Time) C.struct_tm {
 //
 // As this uses C FFI with `cgo`; not all OS's are supported or tested
 var CStr = DateFormatterWrapper{
-	format: func(dt time.Time, formatStr string) string {
+	format: func(dt time.Time, locale locales.Translator, formatStr string) string {
 		format := C.CString(formatStr)
 		result := C.CString("")
 		defer C.free(unsafe.Pointer(result))
 
 		tm := timeToTm(&dt)
 		defer C.free(unsafe.Pointer(tm.tm_zone))
+
+		localeStr := C.CString(fmt.Sprintf("%s.UTF-8", locale.Locale()))
+		fmt.Println(locale.Locale())
+		defer C.free(unsafe.Pointer(localeStr))
+		C.setlocale(C.LC_TIME, localeStr)
 
 		// %c => ~24 chars
 		// '%', 'c' => 12 chars each

@@ -44,7 +44,7 @@ type DateFormatter interface {
 }
 
 type DateFormatterWrapper struct {
-	format   func(dt time.Time, formatStr string) string
+	format   func(dt time.Time, locale locales.Translator, formatStr string) string
 	parse    func(input, format string) (time.Time, error)
 	tokenDef TokenMap
 	prefix   rune
@@ -55,7 +55,7 @@ func (formatter *DateFormatterWrapper) TokenMap() TokenMap {
 }
 
 func (formatter DateFormatterWrapper) Format(dt time.Time, locale locales.Translator, str *string) string {
-	return formatter.format(dt, *str)
+	return formatter.format(dt, locale, *str)
 }
 
 func (formatter DateFormatterWrapper) Parse(input, format string) (time.Time, error) {

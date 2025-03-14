@@ -2,10 +2,12 @@ package parser
 
 import (
 	"time"
+
+	"github.com/go-playground/locales"
 )
 
 var Go = DateFormatterWrapper{
-	format: func(dt time.Time, formatStr string) string {
+	format: func(dt time.Time, locale locales.Translator, formatStr string) string {
 		return dt.Format(formatStr)
 	},
 	parse: func(input, format string) (time.Time, error) {
