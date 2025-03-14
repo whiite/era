@@ -10,6 +10,15 @@ import (
 	"github.com/go-playground/locales"
 )
 
+// Go port of the C time functions `strptime` and `strftime`
+//
+// Most formatting tokens are supported for English locales and are near one to one with the
+// C equivalents with some small differences when it comes to spacing between characters
+//
+// Parsing is very much a work in progress only supporting a very limited set.
+//
+// Due to these incompatibilities it's recommend to use the CStr parser if possible
+// for the time being
 var Strftime DateFormatterPrefix
 
 func init() {
