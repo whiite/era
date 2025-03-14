@@ -36,16 +36,19 @@ func main() {
 	}{
 		Timestamp:   time.Now(),
 		PackageName: pkgName,
+		// NOTE: these can be found by running `locale -a`
 		Locales: []Locale{
 			{
 				Name:      "en_US",
 				AliasList: []string{"en", "us"},
 			},
 			{
-				Name: "fr",
+				Name:      "fr_FR",
+				AliasList: []string{"fr"},
 			},
 			{
-				Name: "es",
+				Name:      "es_ES",
+				AliasList: []string{"es"},
 			},
 		},
 	})
