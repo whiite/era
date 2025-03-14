@@ -30,6 +30,10 @@ func tmToTime(tm *C.struct_tm, location *time.Location) time.Time {
 	)
 }
 
+// Converts a Go based time.Time to a C tm struct equivalent
+//
+// Careful with memory when using.
+// struct_tm.tm_zone is a C string that should be freed when done
 func timeToTm(dt *time.Time) C.struct_tm {
 	zone, offset := dt.Zone()
 	dst := 0
@@ -55,6 +59,8 @@ func timeToTm(dt *time.Time) C.struct_tm {
 }
 
 // Formatter built around C FFI to strftime and strptime
+//
+// As this uses C FFI with `cgo`; not all OS's are supported or tested
 var CStr = DateFormatterWrapper{
 	format: func(dt time.Time, formatStr string) string {
 		format := C.CString(formatStr)
@@ -62,11 +68,21 @@ var CStr = DateFormatterWrapper{
 		defer C.free(unsafe.Pointer(result))
 
 		tm := timeToTm(&dt)
-		C.strftime(result, C.sizeof_char*1024, format, &tm)
+		defer C.free(unsafe.Pointer(tm.tm_zone))
+
+		// %c => ~24 chars
+		// '%', 'c' => 12 chars each
+		// Nearest multiple of 8 = 16
+		const MAX_CHAR_PRINT = 16
+		bufferSize := len(formatStr) * MAX_CHAR_PRINT
+		C.strftime(result, C.size_t(bufferSize*C.sizeof_char), format, &tm)
+
 		return C.GoString(result)
 	},
 	parse: func(input, format string) (time.Time, error) {
 		tm := C.struct_tm{
+			// NOTE: this needs the full year not just the years since 1900
+			// Unsure why in this particular case and not when formatting
 			tm_year: C.int(time.Unix(0, 0).Year()),
 		}
 
