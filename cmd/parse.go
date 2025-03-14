@@ -89,6 +89,15 @@ var parseCmd = &cobra.Command{
 				return fmt.Errorf("Failed to parse %q via the strptime parser", args[0])
 			}
 			dt = time.In(location)
+		case "c":
+			if len(args) == 1 {
+				return fmt.Errorf("Missing specified format argument")
+			}
+			time, err := parser.CStr.Parse(args[0], args[1])
+			if err != nil {
+				return fmt.Errorf("Failed to parse %q via the strptime parser", args[0])
+			}
+			dt = time.In(location)
 		default:
 			return fmt.Errorf("%q is not a supported parser", Parser)
 		}

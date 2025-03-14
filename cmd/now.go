@@ -102,8 +102,10 @@ func FormatTime(dt time.Time, locale locales.Translator, formatter string, parse
 			return formattedTime, fmt.Errorf("No format string provided")
 		}
 		formattedTime = parser.Strftime.Format(dt, locale, &parseStr)
+	case "c":
+		formattedTime = parser.CStr.Format(dt, locale, &parseStr)
 	default:
-		return formattedTime, fmt.Errorf("'%s' is not a supported formatter", formatter)
+		return formattedTime, fmt.Errorf("%q is not a supported formatter", formatter)
 	}
 
 	return formattedTime, nil
