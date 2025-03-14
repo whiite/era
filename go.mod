@@ -1,6 +1,6 @@
 module gitlab.com/monokuro/era
 
-go 1.23.6
+go 1.24.1
 
 require (
 	github.com/go-playground/locales v0.14.1
