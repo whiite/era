@@ -47,6 +47,7 @@ type DateFormatterWrapper struct {
 	format   func(dt time.Time, formatStr string) string
 	parse    func(input, format string) (time.Time, error)
 	tokenDef TokenMap
+	prefix   rune
 }
 
 func (formatter *DateFormatterWrapper) TokenMap() TokenMap {
@@ -65,7 +66,7 @@ func (formatter DateFormatterWrapper) TokenDesc() string {
 	var output strings.Builder
 	for _, tokenChar := range slices.Sorted(maps.Keys(formatter.tokenDef)) {
 		tokenDef := formatter.tokenDef[tokenChar]
-		output.WriteString(fmt.Sprintf("%s: %s\n", tokenChar, tokenDef.Desc))
+		output.WriteString(fmt.Sprintf("%c%s: %s\n", formatter.prefix, tokenChar, tokenDef.Desc))
 		if len(tokenDef.aliases) > 0 {
 			output.WriteString("  aliases:")
 			for _, alias := range tokenDef.aliases {
