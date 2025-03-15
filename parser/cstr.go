@@ -69,13 +69,13 @@ var CStr = DateFormatterWrapper{
 	format: func(dt time.Time, locale locales.Translator, formatStr string) string {
 		format := C.CString(formatStr)
 		result := C.CString("")
+		defer C.free(unsafe.Pointer(format))
 		defer C.free(unsafe.Pointer(result))
 
 		tm := timeToTm(&dt)
 		defer C.free(unsafe.Pointer(tm.tm_zone))
 
 		localeStr := C.CString(fmt.Sprintf("%s.UTF-8", locale.Locale()))
-		fmt.Println(locale.Locale())
 		defer C.free(unsafe.Pointer(localeStr))
 		C.setlocale(C.LC_TIME, localeStr)
 
