@@ -121,14 +121,13 @@ func TestTokensStrftime(t *testing.T) {
 					compareFormat(compareCtx{
 						dt:        dt.In(loc),
 						locale:    en_GB.New(),
-						formatter: "strftime",
+						formatter: "go:strftime",
 						format:    format,
 					}, t)
 				})
 			}
 		}
 	}
-
 }
 
 func TestTokensLuxon(t *testing.T) {
@@ -161,7 +160,6 @@ func TestTokensLuxon(t *testing.T) {
 			}
 		}
 	}
-
 }
 
 func TestTokensMoment(t *testing.T) {
@@ -189,7 +187,6 @@ func TestTokensMoment(t *testing.T) {
 			}
 		}
 	}
-
 }
 
 func TestFormatStringsStrftime(t *testing.T) {
@@ -213,14 +210,13 @@ func TestFormatStringsStrftime(t *testing.T) {
 					compareFormat(compareCtx{
 						dt:        dt.In(loc),
 						locale:    en_GB.New(),
-						formatter: "strftime",
+						formatter: "go:strftime",
 						format:    formatstr,
 					}, t)
 				})
 			}
 		}
 	}
-
 }
 
 func TestFormatStringsLuxon(t *testing.T) {
@@ -250,7 +246,6 @@ func TestFormatStringsLuxon(t *testing.T) {
 			}
 		}
 	}
-
 }
 
 func TestScenario(t *testing.T) {
