@@ -16,6 +16,26 @@ type Locale struct {
 	AliasList []string
 }
 
+// NOTE: these can be found by running `locale -a`
+var supportedLocales = []Locale{
+	{
+		Name:      "en_GB",
+		AliasList: []string{"gb", "uk"},
+	},
+	{
+		Name:      "en_US",
+		AliasList: []string{"en", "us"},
+	},
+	{
+		Name:      "fr_FR",
+		AliasList: []string{"fr"},
+	},
+	{
+		Name:      "es_ES",
+		AliasList: []string{"es"},
+	},
+}
+
 func main() {
 	pkgName := "localiser"
 	err := os.MkdirAll(pkgName, 0750)
@@ -36,23 +56,9 @@ func main() {
 	}{
 		Timestamp:   time.Now(),
 		PackageName: pkgName,
-		// NOTE: these can be found by running `locale -a`
-		Locales: []Locale{
-			{
-				Name:      "en_US",
-				AliasList: []string{"en", "us"},
-			},
-			{
-				Name:      "fr_FR",
-				AliasList: []string{"fr"},
-			},
-			{
-				Name:      "es_ES",
-				AliasList: []string{"es"},
-			},
-		},
+		Locales:     supportedLocales,
 	})
-	fmt.Println("Done")
+	fmt.Printf("Generated locale support for %d locales\n", len(supportedLocales))
 }
 
 var funcMap = template.FuncMap{
@@ -69,7 +75,6 @@ import (
 	"strings"
 
 	"github.com/go-playground/locales"
-	"github.com/go-playground/locales/en_GB"
 	{{- range .Locales }}
 	"github.com/go-playground/locales/{{ printf "%s" .Name }}"
 	{{- end }}
@@ -80,9 +85,6 @@ func Parse(localeStr string) (locales.Translator, error) {
 	var err error
 
 	switch strings.ToLower(localeStr) {
-	case "en_gb", "gb", "uk":
-		selectedLocale = en_GB.New()
-
 	{{- range .Locales }}
 	case "{{ printf "%s" .Name | lower }}" {{- range .AliasList }}{{ printf ", %q" . }}{{- end }}:
 		selectedLocale = {{ printf "%s" .Name }}.New()
