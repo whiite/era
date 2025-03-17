@@ -64,12 +64,12 @@ specific formats are hardcoded to the UK or English versions but all are covered
 
 ## Compatibility table
 
-| Feature                | Go     | strftime/strptime | Go strftime/strptime | Luxon    | Moment |
-| ---------------------- | ------ | ----------------- | -------------------- | -------- | ------ |
-| Formatting with tokens | All ✅ | All ✅            | All ✅               | Most ⚠️  | All ✅ |
-| Token descriptions     | All ✅ | All ✅            | All ✅               | All ✅⚠️ | All ✅ |
-| Locale support         | N/A    | Yes ✅            | Some                 | Some⚠️   | Some   |
-| Parsing tokens         | All ✅ | All ✅            | Some                 | No ❌⚠️  | No ❌  |
+| Feature                | Go     | strftime/strptime | Go strftime/strptime | Luxon   | Moment |
+| ---------------------- | ------ | ----------------- | -------------------- | ------- | ------ |
+| Formatting with tokens | All ✅ | All ✅            | All ✅               | Most    | All ✅ |
+| Token descriptions     | All ✅ | All ✅            | All ✅               | All ✅  | All ✅ |
+| Locale support         | N/A    | Yes ✅            | Some                 | Some    | Some   |
+| Parsing tokens         | All ✅ | All ✅            | Some                 | No ❌⚠️ | No ❌  |
 
 ## Under consideration
 
