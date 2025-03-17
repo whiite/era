@@ -30,8 +30,11 @@ era now --formatter unix
 era now --timezone Asia/Tokyo --formatter luxon "h:mm d/L/yyyy"
 era now --timezone Asia/Tokyo --formatter moment "h:mm D/M/Y"
 
-# Prints the availabe supported tokens and descriptions for the strptime/strftime formatter
+# Prints the available supported tokens and descriptions for the strptime/strftime formatter
 era tokens --formatter strftime
+
+# Prints help for the specific CLI command
+era help <sub command>
 ```
 
 ## Supported Formatters
@@ -45,7 +48,6 @@ Correct escape sequences are supported for all
 specific formats are hardcoded to the UK or English versions but all are covered by tests**
 
 - [moment](https://momentjs.com)
-  - Fully implemented
   - Some locale specific formats may return slightly different strings to the real moment
 - [luxon](https://moment.github.io/luxon/#/)
   - Missing support for tokens:
@@ -54,10 +56,22 @@ specific formats are hardcoded to the UK or English versions but all are covered
     - `f`, `ff`, `fff`, `ffff` - localised date and time
     - `F`, `FF`, `FFF`, `FFFF` - localised date and time with seconds
 - [strftime](https://linux.die.net/man/3/strftime) (tokens used in a variety of languages including the `date` CLI)
-  - `%Ec`, `%c` - date and time format (currently hardcoded to the UK representation)
+  - Full compatibility via C FFI bindings to the `strftime` function
+  - An alternative Go implementation (using `go:strftime` as the `formatter`)
+    - Missing true locale support with some tokens such as `%Ec`, `%c` currently hardcoded to the UK representation
 - [go](https://pkg.go.dev/time) (time package format)
-  - Full support as this CLI tool is written in Go
+  - Full support as this CLI tool is written in Go and uses the standard library time package
+
+## Compatibility table
+
+| Feature                | Go     | strftime/strptime | Go strftime/strptime | Luxon    | Moment |
+| ---------------------- | ------ | ----------------- | -------------------- | -------- | ------ |
+| Formatting with tokens | All ✅ | All ✅            | All ✅               | Most ⚠️  | All ✅ |
+| Token descriptions     | All ✅ | All ✅            | All ✅               | All ✅⚠️ | All ✅ |
+| Locale support         | N/A    | Yes ✅            | Some                 | Some⚠️   | Some   |
+| Parsing tokens         | All ✅ | All ✅            | Some                 | No ❌⚠️  | No ❌  |
 
 ## Under consideration
 
 - [ ] Better UX for locale names - (possibly using: https://pkg.go.dev/github.com/zlasd/tzloc)
+- [ ] A "describe"/"explain" command for describing the tokens provided according to the specified formatter
