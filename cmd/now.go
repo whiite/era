@@ -2,12 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"gitlab.com/monokuro/era/localiser"
-	"gitlab.com/monokuro/era/parser"
 	"strconv"
 	"strings"
 	"time"
 	_ "time/tzdata"
+
+	"gitlab.com/monokuro/era/localiser"
+	"gitlab.com/monokuro/era/parser"
 
 	"github.com/go-playground/locales"
 	"github.com/go-playground/locales/en_GB"

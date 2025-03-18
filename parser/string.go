@@ -83,7 +83,7 @@ func (formatter *DateFormatterString) Parse(input, format string) (time.Time, er
 	return time.Now(), nil
 }
 
-func (formatter DateFormatterString) TokenDesc() string {
+func (formatter *DateFormatterString) TokenDesc() string {
 	var output strings.Builder
 	for _, tokenStr := range slices.Sorted(maps.Keys(formatter.tokenDef)) {
 		tokenDef := formatter.tokenDef[tokenStr]

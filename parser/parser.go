@@ -54,15 +54,15 @@ func (formatter *DateFormatterWrapper) TokenMap() TokenMap {
 	return expandTokenMap(&formatter.tokenDef)
 }
 
-func (formatter DateFormatterWrapper) Format(dt time.Time, locale locales.Translator, str *string) string {
+func (formatter *DateFormatterWrapper) Format(dt time.Time, locale locales.Translator, str *string) string {
 	return formatter.format(dt, locale, *str)
 }
 
-func (formatter DateFormatterWrapper) Parse(input, format string) (time.Time, error) {
+func (formatter *DateFormatterWrapper) Parse(input, format string) (time.Time, error) {
 	return formatter.parse(input, format)
 }
 
-func (formatter DateFormatterWrapper) TokenDesc() string {
+func (formatter *DateFormatterWrapper) TokenDesc() string {
 	var output strings.Builder
 	for _, tokenChar := range slices.Sorted(maps.Keys(formatter.tokenDef)) {
 		tokenDef := formatter.tokenDef[tokenChar]

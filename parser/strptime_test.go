@@ -14,12 +14,13 @@ type testCase struct {
 func TestParse(t *testing.T) {
 	scenarios := []testCase{
 		{input: "04/01/97", format: "%d/%m/%y", want: time.Date(1997, 1, 4, 0, 0, 0, 0, time.Local)},
+		{input: " 4/01/97", format: "%e/%m/%y", want: time.Date(1997, 1, 4, 0, 0, 0, 0, time.Local)},
 	}
 
 	for _, testCase := range scenarios {
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			got, err := Strftime.Parse(&testCase.input, &testCase.format)
+			got, err := Strftime.Parse(testCase.input, testCase.format)
 			if err != nil {
 				t.Errorf("Failed to parse")
 				t.Fail()
