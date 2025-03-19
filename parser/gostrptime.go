@@ -30,7 +30,6 @@ func init() {
 	}
 }
 
-// Formats date strings via the same system as `strftime`
 var tokenMapStrftime = TokenMap{
 	"%": {
 		Desc:   "'%' character literal",

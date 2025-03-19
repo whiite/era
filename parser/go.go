@@ -6,6 +6,7 @@ import (
 	"github.com/go-playground/locales"
 )
 
+// Handler for parsing and formatting date time with Go's standard library `time` package
 var Go = DateHandlerWrapper{
 	format: func(dt time.Time, locale locales.Translator, formatStr string) string {
 		return dt.Format(formatStr)

@@ -21,7 +21,6 @@ func init() {
 	}
 }
 
-// Formats time according to the momentjs tokens
 var tokenMapMoment = TokenMap{
 	"a": {
 		Desc: "Meridiem - 'am'",

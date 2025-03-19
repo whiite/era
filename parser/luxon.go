@@ -27,7 +27,6 @@ func init() {
 // - "f", "ff", "fff", "ffff" - localised date and time
 // - "F", "FF", "FFF", "FFFF" - localised date and time with seconds
 
-// Formats date strings via the same system as `strftime`
 var tokenMapLuxon = TokenMap{
 	"a": {
 		Desc: "Meridiem - 'AM'",
