@@ -6,7 +6,7 @@ import (
 	"github.com/go-playground/locales"
 )
 
-var Go = DateFormatterWrapper{
+var Go = DateHandlerWrapper{
 	format: func(dt time.Time, locale locales.Translator, formatStr string) string {
 		return dt.Format(formatStr)
 	},

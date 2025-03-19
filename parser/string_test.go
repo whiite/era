@@ -9,7 +9,7 @@ import (
 )
 
 func TestTokensStrftime(t *testing.T) {
-	tokens := Strftime.TokenMapExpanded()
+	tokens := GoStrptime.TokenMapExpanded()
 
 	var testDates = []string{"2024-01-07", "1997-01-04", "1989-12-31", "2007-01-01"}
 
@@ -29,7 +29,7 @@ func TestTokensStrftime(t *testing.T) {
 					CompareCtx{
 						Dt:        dt.In(loc),
 						Locale:    en_GB.New(),
-						Formatter: &Strftime,
+						Formatter: &GoStrptime,
 						Format:    format,
 					}.Test(execDate, t)
 				})
@@ -61,7 +61,7 @@ func TestFormatStringsStrftime(t *testing.T) {
 					CompareCtx{
 						Dt:        dt.In(loc),
 						Locale:    en_GB.New(),
-						Formatter: &Strftime,
+						Formatter: &GoStrptime,
 						Format:    formatstr,
 					}.Test(execDate, t)
 				})

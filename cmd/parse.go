@@ -84,7 +84,7 @@ var parseCmd = &cobra.Command{
 			if len(args) == 1 {
 				return fmt.Errorf("Missing specified format argument")
 			}
-			time, err := parser.Strftime.Parse(args[0], args[1])
+			time, err := parser.GoStrptime.Parse(args[0], args[1])
 			if err != nil {
 				return fmt.Errorf("Failed to parse %q via the strptime parser", args[0])
 			}

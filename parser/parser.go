@@ -34,35 +34,53 @@ func expandTokenMap(tmap *TokenMap) TokenMap {
 	return expandedTokenMap
 }
 
-type DateFormatter interface {
+// Describes and contains a mapping of tokens
+type DateDescriptor interface {
+	// Outputs all supported tokens with their descriptions and any aliases
 	TokenDesc() string
+	// Mapping between any token and it's corresponding meta data
 	TokenMap() TokenMap
+}
+
+// Allows formatting date times into other data types
+type DateFormatter interface {
 	// Formats a given time and locale according to the provided string
 	Format(dt time.Time, locale locales.Translator, str *string) string
+}
+
+// Allows parsing data types into date times
+type DateParser interface {
 	// Parses a time string according to the provided format
 	Parse(input, format string) (time.Time, error)
 }
 
-type DateFormatterWrapper struct {
+type DateHandler interface {
+	*DateDescriptor
+	*DateFormatter
+	*DateParser
+}
+
+// Simplest date handler type wrapping functionality defined elsewhere
+type DateHandlerWrapper struct {
 	format   func(dt time.Time, locale locales.Translator, formatStr string) string
 	parse    func(input, format string) (time.Time, error)
 	tokenDef TokenMap
 	prefix   rune
 }
 
-func (formatter *DateFormatterWrapper) TokenMap() TokenMap {
+func (formatter *DateHandlerWrapper) TokenMap() TokenMap {
 	return expandTokenMap(&formatter.tokenDef)
 }
 
-func (formatter *DateFormatterWrapper) Format(dt time.Time, locale locales.Translator, str *string) string {
+func (formatter *DateHandlerWrapper) Format(dt time.Time, locale locales.Translator, str *string) string {
 	return formatter.format(dt, locale, *str)
 }
 
-func (formatter *DateFormatterWrapper) Parse(input, format string) (time.Time, error) {
+func (formatter *DateHandlerWrapper) Parse(input, format string) (time.Time, error) {
 	return formatter.parse(input, format)
 }
 
-func (formatter *DateFormatterWrapper) TokenDesc() string {
+func (formatter *DateHandlerWrapper) TokenDesc() string {
 	var output strings.Builder
 	for _, tokenChar := range slices.Sorted(maps.Keys(formatter.tokenDef)) {
 		tokenDef := formatter.tokenDef[tokenChar]

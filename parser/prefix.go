@@ -10,13 +10,16 @@ import (
 	"github.com/go-playground/locales"
 )
 
-type DateFormatterPrefix struct {
+// Date handler for tokens that always start with a predefined prefix rune
+//
+// e.g. C based `strptime` function tokens: '%c', '%Oy' etc.
+type DateHandlerPrefix struct {
 	Prefix     rune
 	tokenDef   TokenMap
 	tokenGraph *TokenGraphNode[FormatToken[string]]
 }
 
-func (formatter *DateFormatterPrefix) Parse(input, format string) (time.Time, error) {
+func (formatter *DateHandlerPrefix) Parse(input, format string) (time.Time, error) {
 	dt := time.Unix(0, 0).UTC()
 
 	tokenNode := formatter.tokenGraph
@@ -63,11 +66,11 @@ func (formatter *DateFormatterPrefix) Parse(input, format string) (time.Time, er
 	return dt, nil
 }
 
-func (formatter *DateFormatterPrefix) TokenMap() TokenMap {
+func (formatter *DateHandlerPrefix) TokenMap() TokenMap {
 	return expandTokenMap(&formatter.tokenDef)
 }
 
-func (formatter DateFormatterPrefix) Format(dt time.Time, locale locales.Translator, str *string) string {
+func (formatter DateHandlerPrefix) Format(dt time.Time, locale locales.Translator, str *string) string {
 	var formattedDate strings.Builder
 	var tokens strings.Builder
 
@@ -118,7 +121,7 @@ func (formatter DateFormatterPrefix) Format(dt time.Time, locale locales.Transla
 }
 
 // Expands the inner token map to include aliases
-func (formatter DateFormatterPrefix) TokenMapExpanded() map[string]FormatToken[string] {
+func (formatter DateHandlerPrefix) TokenMapExpanded() map[string]FormatToken[string] {
 	expandedTokenMap := map[string]FormatToken[string]{}
 	for token, tokenDef := range formatter.tokenDef {
 		expandedTokenMap[token] = tokenDef
@@ -129,7 +132,7 @@ func (formatter DateFormatterPrefix) TokenMapExpanded() map[string]FormatToken[s
 	return expandedTokenMap
 }
 
-func (formatter DateFormatterPrefix) TokenDesc() string {
+func (formatter DateHandlerPrefix) TokenDesc() string {
 	var output strings.Builder
 	for _, tokenChar := range slices.Sorted(maps.Keys(formatter.tokenDef)) {
 		tokenDef := formatter.tokenDef[tokenChar]

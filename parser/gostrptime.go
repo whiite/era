@@ -19,11 +19,11 @@ import (
 //
 // Due to these incompatibilities it's recommend to use the CStr parser if possible
 // for the time being
-var Strftime DateFormatterPrefix
+var GoStrptime DateHandlerPrefix
 
 func init() {
 	mapExpanded := expandTokenMap(&tokenMapStrftime)
-	Strftime = DateFormatterPrefix{
+	GoStrptime = DateHandlerPrefix{
 		Prefix:     '%',
 		tokenDef:   tokenMapStrftime,
 		tokenGraph: createTokenGraph(&mapExpanded),
@@ -37,12 +37,16 @@ var tokenMapStrftime = TokenMap{
 		expand: func(dt time.Time, locale locales.Translator) string { return "%" },
 	},
 	"A": {
-		Desc:   "Weekday name - 'Monday', 'Tuesday'",
-		expand: func(dt time.Time, locale locales.Translator) string { return dt.Weekday().String() },
+		Desc: "Weekday name - 'Monday', 'Tuesday'",
+		expand: func(dt time.Time, locale locales.Translator) string {
+			return locale.WeekdayWide(dt.Weekday())
+		},
 	},
 	"a": {
-		Desc:   "Weekday name truncated to three characters - 'Mon', 'Tue'",
-		expand: func(dt time.Time, locale locales.Translator) string { return dt.Weekday().String()[:3] },
+		Desc: "Weekday name truncated to three characters - 'Mon', 'Tue'",
+		expand: func(dt time.Time, locale locales.Translator) string {
+			return locale.WeekdayAbbreviated(dt.Weekday())
+		},
 	},
 	"B": {
 		Desc:   "Month name - 'January', 'February'",
@@ -87,6 +91,15 @@ var tokenMapStrftime = TokenMap{
 				fmtstr = fmtstr[1:]
 			}
 			return fmt.Sprintf(fmtstr, dt.Day())
+		},
+		parse: func(dt *time.Time, str *string) (int, error) {
+			// TODO:
+			date, err := strconv.Atoi((*str)[:2])
+			if err != nil {
+				return 0, fmt.Errorf("Unable to parse date")
+			}
+			*dt = time.Date(dt.Year(), dt.Month(), date, dt.Hour(), dt.Minute(), dt.Second(), dt.Nanosecond(), dt.Location())
+			return 1, nil
 		},
 	},
 	"F": {

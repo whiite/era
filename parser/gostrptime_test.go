@@ -20,7 +20,7 @@ func TestParse(t *testing.T) {
 	for _, testCase := range scenarios {
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			got, err := Strftime.Parse(testCase.input, testCase.format)
+			got, err := GoStrptime.Parse(testCase.input, testCase.format)
 			if err != nil {
 				t.Errorf("Failed to parse")
 				t.Fail()

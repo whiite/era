@@ -65,7 +65,7 @@ func timeToTm(dt *time.Time) C.struct_tm {
 // Formatter built around C FFI to strftime and strptime
 //
 // As this uses C FFI with `cgo`; not all OS's are supported or tested
-var CStr = DateFormatterWrapper{
+var CStr = DateHandlerWrapper{
 	format: func(dt time.Time, locale locales.Translator, formatStr string) string {
 		format := C.CString(formatStr)
 		result := C.CString("")

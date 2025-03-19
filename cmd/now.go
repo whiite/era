@@ -100,7 +100,7 @@ func FormatTime(dt time.Time, locale locales.Translator, formatter string, parse
 		if len(parseStr) == 0 {
 			return formattedTime, fmt.Errorf("No format string provided")
 		}
-		formattedTime = parser.Strftime.Format(dt, locale, &parseStr)
+		formattedTime = parser.GoStrptime.Format(dt, locale, &parseStr)
 	case "c", "strftime", "strptime":
 		formattedTime = parser.CStr.Format(dt, locale, &parseStr)
 	case "":

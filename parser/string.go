@@ -10,17 +10,19 @@ import (
 	"github.com/go-playground/locales"
 )
 
-type DateFormatterString struct {
+// Date handler for string based tokens of varying lengths with support for escaping
+// characters
+type DateHandlerString struct {
 	escapeChars []rune
 	tokenDef    TokenMap
 	tokenGraph  *TokenGraphNode[FormatToken[string]]
 }
 
-func (formatter *DateFormatterString) TokenMap() TokenMap {
+func (formatter *DateHandlerString) TokenMap() TokenMap {
 	return expandTokenMap(&formatter.tokenDef)
 }
 
-func (formatter *DateFormatterString) Format(dt time.Time, locale locales.Translator, str *string) string {
+func (formatter *DateHandlerString) Format(dt time.Time, locale locales.Translator, str *string) string {
 	var formattedDate strings.Builder
 	var tokens strings.Builder
 
@@ -79,11 +81,11 @@ func (formatter *DateFormatterString) Format(dt time.Time, locale locales.Transl
 	return formattedDate.String()
 }
 
-func (formatter *DateFormatterString) Parse(input, format string) (time.Time, error) {
+func (formatter *DateHandlerString) Parse(input, format string) (time.Time, error) {
 	return time.Now(), nil
 }
 
-func (formatter *DateFormatterString) TokenDesc() string {
+func (formatter *DateHandlerString) TokenDesc() string {
 	var output strings.Builder
 	for _, tokenStr := range slices.Sorted(maps.Keys(formatter.tokenDef)) {
 		tokenDef := formatter.tokenDef[tokenStr]

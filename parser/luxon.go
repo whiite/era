@@ -9,11 +9,12 @@ import (
 	"github.com/go-playground/locales"
 )
 
-var Luxon DateFormatterString
+// Handler for pasing and formatting using the `luxon` tokens and rules
+var Luxon DateHandlerString
 
 func init() {
 	mapExpanded := expandTokenMap(&tokenMapLuxon)
-	Luxon = DateFormatterString{
+	Luxon = DateHandlerString{
 		escapeChars: []rune{'\''},
 		tokenDef:    tokenMapLuxon,
 		tokenGraph:  createTokenGraph(&mapExpanded),

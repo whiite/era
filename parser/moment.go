@@ -9,11 +9,12 @@ import (
 	"github.com/go-playground/locales"
 )
 
-var MomentJs DateFormatterString
+// Handler for parsing and formatting using the `momentjs` tokens and rules
+var MomentJs DateHandlerString
 
 func init() {
 	mapExpanded := expandTokenMap(&tokenMapMoment)
-	MomentJs = DateFormatterString{
+	MomentJs = DateHandlerString{
 		escapeChars: []rune{'[', ']'},
 		tokenDef:    tokenMapMoment,
 		tokenGraph:  createTokenGraph(&mapExpanded),

@@ -17,7 +17,7 @@ var tokensCmd = &cobra.Command{
 	Short: "Token info for parsers",
 	Long:  "Get and query tokens for specified parsers to see what they map to",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var selectedParser parser.DateFormatter
+		var selectedParser parser.DateDescriptor
 		switch Parser {
 		case "moment", "momentjs":
 			selectedParser = &parser.MomentJs
@@ -26,7 +26,7 @@ var tokensCmd = &cobra.Command{
 		case "c", "strftime", "strptime":
 			selectedParser = &parser.CStr
 		case "go:strptime", "go:strftime":
-			selectedParser = &parser.Strftime
+			selectedParser = &parser.GoStrptime
 		case "go":
 			selectedParser = &parser.Go
 		case "":
