@@ -60,27 +60,27 @@ type DateHandler interface {
 	*DateParser
 }
 
-// Simplest date handler type wrapping functionality defined elsewhere
-type DateHandlerWrapper struct {
+// Simplest date handler type wrapping functionality defined elsewhere that works with tokens
+type DateHandlerTokenWrapper struct {
 	format   func(dt time.Time, locale locales.Translator, formatStr string) string
 	parse    func(input, format string) (time.Time, error)
 	tokenDef TokenMap
 	prefix   rune
 }
 
-func (formatter *DateHandlerWrapper) TokenMap() TokenMap {
+func (formatter *DateHandlerTokenWrapper) TokenMap() TokenMap {
 	return expandTokenMap(&formatter.tokenDef)
 }
 
-func (formatter *DateHandlerWrapper) Format(dt time.Time, locale locales.Translator, str *string) string {
+func (formatter *DateHandlerTokenWrapper) Format(dt time.Time, locale locales.Translator, str *string) string {
 	return formatter.format(dt, locale, *str)
 }
 
-func (formatter *DateHandlerWrapper) Parse(input, format string) (time.Time, error) {
+func (formatter *DateHandlerTokenWrapper) Parse(input, format string) (time.Time, error) {
 	return formatter.parse(input, format)
 }
 
-func (formatter *DateHandlerWrapper) TokenDesc() string {
+func (formatter *DateHandlerTokenWrapper) TokenDesc() string {
 	var output strings.Builder
 	for _, tokenChar := range slices.Sorted(maps.Keys(formatter.tokenDef)) {
 		tokenDef := formatter.tokenDef[tokenChar]
