@@ -11,13 +11,13 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(formatterCmd)
+	rootCmd.AddCommand(parserCmd)
 }
 
-var formatterCmd = &cobra.Command{
-	Use:   "formatter",
-	Short: "List all available formatters",
-	Long:  "List all formatters available to use with any command that supports a formatter argument",
+var parserCmd = &cobra.Command{
+	Use:   "parser",
+	Short: "List all available parsers",
+	Long:  "List all parsers available to use with any command that supports a parser argument",
 	Run: func(cmd *cobra.Command, args []string) {
 		var output strings.Builder
 
@@ -36,12 +36,13 @@ var formatterCmd = &cobra.Command{
 	},
 }
 
-type formatterDesc struct {
+type parserDesc struct {
 	formatter parser.DateFormatter
 	alias     []string
 }
 
-var formatterMap = map[string]formatterDesc{
+// luxon and moment are not supported currently
+var parserMap = map[string]parserDesc{
 	"unix": {
 		alias: []string{"timestamp", "ts"},
 	},
@@ -52,11 +53,6 @@ var formatterMap = map[string]formatterDesc{
 		alias: []string{"iso8601"},
 	},
 	"go": {formatter: &parser.Go},
-	"moment": {
-		formatter: &parser.MomentJs,
-		alias:     []string{"momentjs"},
-	},
-	"luxon": {formatter: &parser.Luxon},
 	"strftime": {
 		formatter: &parser.CStr,
 		alias:     []string{"c", "strptime"},
