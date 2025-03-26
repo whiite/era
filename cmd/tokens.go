@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"fmt"
+
 	"gitlab.com/monokuro/era/parser"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -34,7 +36,11 @@ var tokensCmd = &cobra.Command{
 		default:
 			return fmt.Errorf("Parser %q is not supported", Parser)
 		}
-		fmt.Print(selectedParser.TokenDesc())
+		if NoColor {
+			fmt.Print(selectedParser.TokenDesc())
+		} else {
+			fmt.Print(selectedParser.TokenDescTokenFormatter(color.CyanString))
+		}
 		return nil
 	},
 }
