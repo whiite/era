@@ -38,6 +38,9 @@ func expandTokenMap(tmap *TokenMap) TokenMap {
 type DateDescriptor interface {
 	// Outputs all supported tokens with their descriptions and any aliases
 	TokenDesc() string
+	// Outputs all supported tokens with their descriptions and any aliases with
+	// support for providing a token formatter to customise how tokens are displayed
+	TokenDescTokenFormatter(tokenFmt func(format string, a ...any) string) string
 	// Mapping between any token and it's corresponding meta data
 	TokenMap() TokenMap
 }
@@ -80,20 +83,26 @@ func (formatter *DateHandlerTokenWrapper) Parse(input, format string) (time.Time
 	return formatter.parse(input, format)
 }
 
-func (formatter *DateHandlerTokenWrapper) TokenDesc() string {
+func (formatter *DateHandlerTokenWrapper) TokenDescTokenFormatter(tokenFmt func(format string, a ...any) string) string {
 	var output strings.Builder
 	for _, tokenChar := range slices.Sorted(maps.Keys(formatter.tokenDef)) {
 		tokenDef := formatter.tokenDef[tokenChar]
-		output.WriteString(fmt.Sprintf("%c%s: %s\n", formatter.prefix, tokenChar, tokenDef.Desc))
+		output.WriteString(tokenFmt("%c%s: ", formatter.prefix, tokenChar))
+		output.WriteString(fmt.Sprintf("%s\n", tokenDef.Desc))
 		if len(tokenDef.aliases) > 0 {
 			output.WriteString("  aliases:")
 			for _, alias := range tokenDef.aliases {
-				output.WriteString(fmt.Sprintf(" %s", alias))
+				output.WriteString(" ")
+				output.WriteString(tokenFmt("%s", alias))
 			}
 			output.WriteString("\n")
 		}
 	}
 	return output.String()
+}
+
+func (formatter *DateHandlerTokenWrapper) TokenDesc() string {
+	return formatter.TokenDescTokenFormatter(fmt.Sprintf)
 }
 
 func numberSuffixed(num int) string {

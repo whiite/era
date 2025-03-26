@@ -85,19 +85,25 @@ func (formatter *DateHandlerString) Parse(input, format string) (time.Time, erro
 	return time.Now(), nil
 }
 
-func (formatter *DateHandlerString) TokenDesc() string {
+func (formatter *DateHandlerString) TokenDescTokenFormatter(tokenFmt func(format string, a ...any) string) string {
 	var output strings.Builder
 	for _, tokenStr := range slices.Sorted(maps.Keys(formatter.tokenDef)) {
 		tokenDef := formatter.tokenDef[tokenStr]
-		output.WriteString(fmt.Sprintf("%s: %s\n", tokenStr, tokenDef.Desc))
+		output.WriteString(tokenFmt("%s: ", tokenStr))
+		output.WriteString(fmt.Sprintf("%s\n", tokenDef.Desc))
 		if len(tokenDef.aliases) > 0 {
 			output.WriteString("  aliases:")
 			for _, alias := range tokenDef.aliases {
-				output.WriteString(fmt.Sprintf(" %s", alias))
+				output.WriteString(" ")
+				output.WriteString(tokenFmt("%s", alias))
 			}
 			output.WriteString("\n")
 		}
 
 	}
 	return output.String()
+}
+
+func (formatter *DateHandlerString) TokenDesc() string {
+	return formatter.TokenDescTokenFormatter(fmt.Sprintf)
 }

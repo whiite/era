@@ -132,18 +132,24 @@ func (formatter DateHandlerPrefix) TokenMapExpanded() map[string]FormatToken[str
 	return expandedTokenMap
 }
 
-func (formatter DateHandlerPrefix) TokenDesc() string {
+func (formatter DateHandlerPrefix) TokenDescTokenFormatter(tokenFmt func(format string, a ...any) string) string {
 	var output strings.Builder
 	for _, tokenChar := range slices.Sorted(maps.Keys(formatter.tokenDef)) {
 		tokenDef := formatter.tokenDef[tokenChar]
-		output.WriteString(fmt.Sprintf("%c%s: %s\n", formatter.Prefix, tokenChar, tokenDef.Desc))
+		output.WriteString(tokenFmt("%c%s: ", formatter.Prefix, tokenChar))
+		output.WriteString(fmt.Sprintf("%s\n", tokenDef.Desc))
 		if len(tokenDef.aliases) > 0 {
 			output.WriteString("  aliases:")
 			for _, alias := range tokenDef.aliases {
-				output.WriteString(fmt.Sprintf(" %s", alias))
+				output.WriteString(" ")
+				output.WriteString(tokenFmt("%s", alias))
 			}
 			output.WriteString("\n")
 		}
 	}
 	return output.String()
+}
+
+func (formatter DateHandlerPrefix) TokenDesc() string {
+	return formatter.TokenDescTokenFormatter(fmt.Sprintf)
 }
