@@ -36,35 +36,57 @@ var durationCmd = &cobra.Command{
 
 // Parses a provided duration string into milliseconds
 func parseDur(durStr string) (int, error) {
-	durs := [][]rune{}
-	durStack := []rune{}
+	valStack := []rune{}
+	unitStack := []rune{}
 
-	for _, char := range durStr {
-		switch char {
-		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-			durStack = append(durStack, char)
-		case 'd', 'h', 'm', 's':
-			durStack = append(durStack, char)
-			durs = append(durs, durStack)
-			durStack = []rune{}
+	parse := func(valStack, unitStack []rune) (int, error) {
+		durVal, err := strconv.Atoi(string(valStack))
+		if err != nil {
+			return 0, fmt.Errorf("Invalid duration value '%s'", string(valStack))
 		}
+
+		durMs, err := duration(string(unitStack))
+		if err != nil {
+			return 0, err
+		}
+
+		return durVal * durMs, nil
 	}
 
 	total := 0
-	for _, durStack := range durs {
-		unit := durStack[len(durStack)-1]
-		durVal, err := strconv.Atoi(string(durStack[:len(durStack)-1]))
-		if err != nil {
-			return 0, err
-		}
+	for _, char := range durStr {
+		switch char {
+		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			if len(unitStack) > 0 {
+				val, err := parse(valStack, unitStack)
+				if err != nil {
+					return 0, err
+				}
 
-		durMs, err := duration(string(unit))
-		if err != nil {
-			return 0, err
-		}
+				total += val
+				valStack = []rune{}
+				unitStack = []rune{}
+			}
 
-		total += durVal * durMs
+			valStack = append(valStack, char)
+		case 'd', 'h', 'm', 's':
+			unitStack = append(unitStack, char)
+		case ' ':
+			continue
+		default:
+			return 0, fmt.Errorf("Invalid character: '%c'", char)
+		}
 	}
+
+	if len(valStack) > 0 || len(unitStack) > 0 {
+		val, err := parse(valStack, unitStack)
+		if err != nil {
+			return 0, err
+		}
+
+		total += val
+	}
+
 	return total / int(time.Millisecond), nil
 }
 
@@ -78,6 +100,8 @@ func duration(durUnit string) (int, error) {
 		return int(time.Minute), nil
 	case "s":
 		return int(time.Second), nil
+	case "ms", "":
+		return int(time.Millisecond), nil
 	}
 
 	return 1, nil
