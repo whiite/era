@@ -10,12 +10,15 @@ import (
 )
 
 // TODO: features:
-// - Support and parse milti-rune units (e.g. "ms", "ns")
-// - Choose output units (e.g. 1m --output seconds => 60)
-// - Support printing with separators (e.g. 10000 => 10_000)
+// - Support parsing and printing with separators (e.g. 10000 => 10_000)
+// - Support outputting as a cron string
+// - Support fractional values? (e.g. 1.5h)
 // - Support addition and subtraction (e.g. 1s + 2s => 3000)
 
+var OutputDur string
+
 func init() {
+	durationCmd.Flags().StringVarP(&OutputDur, "output", "o", "ms", "Output units to display the duration as")
 	rootCmd.AddCommand(durationCmd)
 }
 
@@ -23,9 +26,14 @@ var durationCmd = &cobra.Command{
 	Use:     "duration",
 	Aliases: []string{"dur"},
 	Short:   "Parse and convert durations",
-	Long:    "Parse and convert durations into different output formats",
+	Long:    "Parse and convert human readable durations into different units and formats",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		res, err := parseDur(strings.TrimSpace(args[0]))
+		outUnit, err := durationUnit(OutputDur)
+		if err != nil {
+			return err
+		}
+
+		res, err := parseDur(strings.TrimSpace(args[0]), outUnit)
 		if err != nil {
 			return err
 		}
@@ -34,18 +42,19 @@ var durationCmd = &cobra.Command{
 	},
 }
 
-// Parses a provided duration string into milliseconds
-func parseDur(durStr string) (int, error) {
+// Parses a provided duration string into a provided output unit where following
+// the `time` package: 1 = 1 nanosecond
+func parseDur(durStr string, outputUnit int) (int, error) {
 	valStack := []rune{}
 	unitStack := []rune{}
 
 	parse := func(valStack, unitStack []rune) (int, error) {
 		durVal, err := strconv.Atoi(string(valStack))
 		if err != nil {
-			return 0, fmt.Errorf("Invalid duration value '%s'", string(valStack))
+			return 0, fmt.Errorf("Invalid duration value %q", string(valStack))
 		}
 
-		durMs, err := duration(string(unitStack))
+		durMs, err := durationUnit(string(unitStack))
 		if err != nil {
 			return 0, err
 		}
@@ -55,8 +64,8 @@ func parseDur(durStr string) (int, error) {
 
 	total := 0
 	for _, char := range durStr {
-		switch char {
-		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+		switch {
+		case '0' <= char && char <= '9':
 			if len(unitStack) > 0 {
 				val, err := parse(valStack, unitStack)
 				if err != nil {
@@ -69,12 +78,13 @@ func parseDur(durStr string) (int, error) {
 			}
 
 			valStack = append(valStack, char)
-		case 'd', 'h', 'm', 's':
+		case 'A' <= char && char <= 'Z':
+		case 'a' <= char && char <= 'z':
 			unitStack = append(unitStack, char)
-		case ' ':
+		case char == ' ':
 			continue
 		default:
-			return 0, fmt.Errorf("Invalid character: '%c'", char)
+			return 0, fmt.Errorf("Invalid character: %q", char)
 		}
 	}
 
@@ -87,22 +97,24 @@ func parseDur(durStr string) (int, error) {
 		total += val
 	}
 
-	return total / int(time.Millisecond), nil
+	return total / outputUnit, nil
 }
 
-func duration(durUnit string) (int, error) {
+func durationUnit(durUnit string) (int, error) {
 	switch durUnit {
-	case "d":
+	case "d", "day", "days":
 		return int(time.Hour * 24), nil
-	case "h":
+	case "h", "hour", "hours":
 		return int(time.Hour), nil
-	case "m":
+	case "m", "minute", "minutes":
 		return int(time.Minute), nil
-	case "s":
+	case "s", "second", "seconds":
 		return int(time.Second), nil
-	case "ms", "":
+	case "ms", "millisecond", "milliseconds":
 		return int(time.Millisecond), nil
+	case "ns", "nanosecond", "nanoseconds":
+		return int(time.Nanosecond), nil
 	}
 
-	return 1, nil
+	return 0, fmt.Errorf("Invalid unit: %q", durUnit)
 }
