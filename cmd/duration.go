@@ -10,7 +10,6 @@ import (
 )
 
 // TODO: features:
-// - Support outputting as a cron string
 // - Support fractional values? (e.g. 1.5h)
 // - Support addition and subtraction (e.g. 1s + 2s => 3000)
 
@@ -89,7 +88,8 @@ func parseDur(durStr string, outputUnit int) (int, error) {
 		case 'A' <= char && char <= 'Z':
 		case 'a' <= char && char <= 'z':
 			unitStack = append(unitStack, char)
-		case char == ' ':
+		// TODO: add default units in case of ' '
+		case char == ' ' || char == '_':
 			continue
 		default:
 			return 0, fmt.Errorf("Invalid character: %q", char)
