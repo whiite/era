@@ -96,7 +96,8 @@ func parseDur(durStr string) (int, error) {
 		case 'A' <= char && char <= 'Z':
 		case 'a' <= char && char <= 'z':
 			unitStack = append(unitStack, char)
-		// TODO: add default units in case of ' '
+		case char == ' ' && len(valStack) > 0 && len(unitStack) == 0:
+			return 0, fmt.Errorf("Units are required for space separated durations")
 		case char == ' ' || char == '_':
 			continue
 		default:
@@ -130,6 +131,8 @@ func durationUnit(durUnit string) (int, error) {
 		return int(time.Millisecond), nil
 	case "ns", "nanosecond", "nanoseconds":
 		return int(time.Nanosecond), nil
+	case "":
+		return 0, fmt.Errorf("Units are required")
 	}
 
 	return 0, fmt.Errorf("Invalid unit: %q", durUnit)
