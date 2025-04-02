@@ -10,15 +10,18 @@ import (
 )
 
 // TODO: features:
-// - Support parsing and printing with separators (e.g. 10000 => 10_000)
 // - Support outputting as a cron string
 // - Support fractional values? (e.g. 1.5h)
 // - Support addition and subtraction (e.g. 1s + 2s => 3000)
 
 var OutputDur string
+var Separator string
 
 func init() {
 	durationCmd.Flags().StringVarP(&OutputDur, "output", "o", "ms", "Output units to display the duration as")
+	durationCmd.Flags().StringVarP(&Separator, "separator", "_", "", "Output units displayed with a visual separator with '_' by default (e.g. 1_000_000)")
+	sepFlag := durationCmd.Flags().Lookup("separator")
+	sepFlag.NoOptDefVal = "_"
 	rootCmd.AddCommand(durationCmd)
 }
 
@@ -37,7 +40,12 @@ var durationCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		fmt.Println(res)
+
+		if Separator != "" {
+			fmt.Println(formatSeparator(res, Separator))
+		} else {
+			fmt.Println(res)
+		}
 		return nil
 	},
 }
@@ -117,4 +125,17 @@ func durationUnit(durUnit string) (int, error) {
 	}
 
 	return 0, fmt.Errorf("Invalid unit: %q", durUnit)
+}
+
+// Formats a numerical value into one with character separators for visual clarity
+func formatSeparator(val int, separator string) string {
+	numStr := strconv.Itoa(val)
+	output := numStr
+	for idx := len(numStr) - 1; idx > 0; idx -= 1 {
+		if (idx+1)%3 == 0 {
+			output = output[:idx] + separator + output[idx:]
+		}
+	}
+
+	return output
 }
