@@ -10,10 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// TODO: features:
-// - Support fractional values? (e.g. 1.5h)
-// - Support addition and subtraction (e.g. 1s + 2s => 3000)
-
 var OutputDur string
 var Separator string
 var Round bool
@@ -59,12 +55,12 @@ var durationCmd = &cobra.Command{
 
 // Parses a provided duration string into a provided output following the `time`
 // package definition for time: 1 = 1 nanosecond
-func parseDur(durStr string) (int, error) {
+func parseDur(durStr string) (float64, error) {
 	valStack := []rune{}
 	unitStack := []rune{}
 
-	parse := func(valStack, unitStack []rune) (int, error) {
-		durVal, err := strconv.Atoi(string(valStack))
+	parse := func(valStack, unitStack []rune) (float64, error) {
+		durVal, err := strconv.ParseFloat(string(valStack), 64)
 		if err != nil {
 			return 0, fmt.Errorf("Invalid duration value %q", string(valStack))
 		}
@@ -74,13 +70,13 @@ func parseDur(durStr string) (int, error) {
 			return 0, err
 		}
 
-		return durVal * durUnit, nil
+		return durVal * float64(durUnit), nil
 	}
 
-	total := 0
+	total := 0.
 	for _, char := range durStr {
 		switch {
-		case '0' <= char && char <= '9':
+		case '0' <= char && char <= '9' || char == '.':
 			if len(unitStack) > 0 {
 				val, err := parse(valStack, unitStack)
 				if err != nil {
