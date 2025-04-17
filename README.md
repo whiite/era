@@ -33,6 +33,11 @@ era now --timezone Asia/Tokyo --formatter moment "h:mm D/M/Y"
 # Prints the available supported tokens and descriptions for the strptime/strftime formatter
 era tokens --formatter strftime
 
+# Convert and parse durations
+era duration 90s --output minutes # 1.5
+# Supports multiple units and separators
+era duration 1h5_000ms --output ms --separator=_ # 3_605_000
+
 # Prints help for the specific CLI command
 era help <sub command>
 ```
