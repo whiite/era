@@ -30,6 +30,10 @@ era now --formatter unix
 era now --timezone Asia/Tokyo --formatter luxon "h:mm d/L/yyyy"
 era now --timezone Asia/Tokyo --formatter moment "h:mm D/M/Y"
 
+# Parse and convert a time from one format to another
+era parse --formatter unix 1746799240 --format iso # 2025-05-09T15:00:40+01:00
+era parse --formatter iso 2025-05-09T15:00:40+01:00 --format moment "h:mm D/M/Y" # 3:00 9/5/2025
+
 # Prints the available supported tokens and descriptions for the strptime/strftime formatter
 era tokens --formatter strftime
 
