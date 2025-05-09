@@ -29,7 +29,7 @@ var parseCmd = &cobra.Command{
 	Use:   "parse",
 	Short: "Parse a given time",
 	Long:  "Parse a given time in order to manipulate; convert or output it in a different format",
-	Args:  cobra.RangeArgs(1, 2),
+	Args:  cobra.RangeArgs(1, 3),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		location := time.Now().Local().Location()
 		locale := en_GB.New()
@@ -102,7 +102,11 @@ var parseCmd = &cobra.Command{
 			return fmt.Errorf("%q is not a supported parser", Parser)
 		}
 
-		formattedTime, err := FormatTime(dt, locale, Parser, Format)
+		parseStr := ""
+		if len(args) > 2 {
+			parseStr = args[2]
+		}
+		formattedTime, err := FormatTime(dt, locale, Format, parseStr)
 		if err != nil {
 			return err
 		}
