@@ -103,8 +103,8 @@ var parseCmd = &cobra.Command{
 		}
 
 		parseStr := ""
-		if len(args) > 2 {
-			parseStr = args[2]
+		if len(args) > 1 {
+			parseStr = args[1]
 		}
 		formattedTime, err := FormatTime(dt, locale, Format, parseStr)
 		if err != nil {
