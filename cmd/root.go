@@ -15,7 +15,7 @@ func init() {
 
 var rootCmd = &cobra.Command{
 	Use:     "era",
-	Version: "0.3.0",
+	Version: "0.4.1",
 	Short:   "Simple utility for working with time and dates",
 	Long:    `A simple and intuitive tool for working with and manipulating time and dates`,
 	Run: func(cmd *cobra.Command, args []string) {
