@@ -6,6 +6,9 @@ package parser
 #cgo noescape strptime
 #cgo nocallback strptime
 
+// Enables GNU extensions for strptime, tm_gmtoff and tm_zone
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
