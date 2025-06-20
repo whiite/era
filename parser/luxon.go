@@ -29,13 +29,13 @@ func init() {
 
 var tokenMapLuxon = TokenMap{
 	"a": {
-		Desc: "Meridiem - 'AM'",
+		Desc: "Meridiem - 'am', 'pm'",
 		expand: func(dt time.Time, locale locales.Translator) string {
 			// TODO: locale
 			if dt.Hour() < 12 {
-				return "AM"
+				return "am"
 			}
-			return "PM"
+			return "pm"
 		},
 	},
 	"c": {

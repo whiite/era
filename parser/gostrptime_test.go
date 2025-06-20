@@ -22,8 +22,9 @@ func TestParse(t *testing.T) {
 			t.Parallel()
 			got, err := GoStrptime.Parse(testCase.input, testCase.format)
 			if err != nil {
-				t.Errorf("Failed to parse")
+				t.Errorf("Failed to parse: '%s' with format '%s'\n%s", testCase.input, testCase.format, err)
 				t.Fail()
+				return
 			}
 			if got.Compare(testCase.want) != 0 {
 				t.Errorf("Fail\nGot:  %s\nwant: %s", got, testCase.want)

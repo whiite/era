@@ -60,7 +60,14 @@ func execDate(ctx CompareCtx, t *testing.T) string {
 }
 
 func execLuxon(ctx CompareCtx, t *testing.T) string {
-	evalStr := fmt.Sprintf("(await import('npm:luxon')).DateTime.fromSeconds(%d).setZone(%q).toFormat(%q)", ctx.Dt.Unix(), ctx.Dt.Location(), ctx.Format)
+	localeCompat := strings.ReplaceAll(ctx.Locale.Locale(), "_", "-")
+	evalStr := fmt.Sprintf(
+		"(await import('npm:luxon')).DateTime.fromSeconds(%d).setLocale(%q).setZone(%q).toFormat(%q)",
+		ctx.Dt.Unix(),
+		localeCompat,
+		ctx.Dt.Location(),
+		ctx.Format,
+	)
 	cmd := exec.Command("deno", "eval", "-p", evalStr)
 	var out strings.Builder
 	cmd.Stdout = &out

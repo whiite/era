@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"gitlab.com/monokuro/era/dateutils"
@@ -92,10 +93,9 @@ var tokenMapStrftime = TokenMap{
 			return fmt.Sprintf(fmtstr, dt.Day())
 		},
 		parse: func(dt *time.Time, str *string) (int, error) {
-			// TODO:
-			date, err := strconv.Atoi((*str)[:2])
+			date, err := strconv.Atoi(strings.TrimSpace((*str)[:2]))
 			if err != nil {
-				return 0, fmt.Errorf("Unable to parse date")
+				return 0, fmt.Errorf("Unable to parse date: %s", err)
 			}
 			*dt = time.Date(dt.Year(), dt.Month(), date, dt.Hour(), dt.Minute(), dt.Second(), dt.Nanosecond(), dt.Location())
 			return 1, nil
@@ -187,9 +187,9 @@ var tokenMapStrftime = TokenMap{
 		expand: func(dt time.Time, locale locales.Translator) string {
 			// TODO: locale
 			if dt.Hour() < 12 {
-				return "am"
+				return "a.m."
 			}
-			return "pm"
+			return "p.m."
 		},
 	},
 	"r": {
@@ -200,9 +200,9 @@ var tokenMapStrftime = TokenMap{
 				hour = 12
 			}
 
-			ampm := "pm"
+			ampm := "p.m."
 			if dt.Hour() < 12 {
-				ampm = "am"
+				ampm = "a.m."
 			}
 			return fmt.Sprintf("%02d:%02d:%02d %s", hour, dt.Minute(), dt.Second(), ampm)
 		},
